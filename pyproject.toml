@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "apr-wm-v0"
+version = "0.1.0"
+description = "Interaction-level adaptive physics-residual world model V0"
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+  "torch>=2.8,<3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10"]
+
+[project.scripts]
+aprwm-v0 = "aprwm_v0.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["aprwm_v0*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

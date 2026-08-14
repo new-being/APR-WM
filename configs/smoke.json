@@ -1,0 +1,27 @@
+{
+  "seed": 3,
+  "device": "cpu",
+  "output_dir": "runs/smoke",
+  "model": {
+    "hidden_dim": 24,
+    "router_hidden_dim": 12,
+    "depth": 2
+  },
+  "train": {
+    "steps": 3,
+    "batch_size": 4,
+    "trajectory_steps": 2,
+    "n_objects": 4,
+    "regularizer_warmup_steps": 1,
+    "log_every": 1,
+    "amp": false
+  },
+  "eval": {
+    "batches": 1,
+    "batch_size": 4,
+    "id_n_objects": 4,
+    "ood_n_objects": 5,
+    "horizon": 3
+  }
+}
+
