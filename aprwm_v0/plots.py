@@ -1002,3 +1002,411 @@ def plot_v6(output_dir: str | Path) -> None:
     figure.tight_layout()
     figure.savefig(root / "noise_calibration.png", dpi=180)
     plt.close(figure)
+
+
+def plot_v6r0(output_dir: str | Path) -> None:
+    root = Path(output_dir)
+    aggregate = _read_csv(root / "metrics_aggregate.csv")
+    horizons = _read_csv(root / "rollout_horizons.csv")
+    plt = _matplotlib()
+    metric_index = {row["metric"]: row for row in aggregate}
+
+    metrics = (
+        "magnitude_detection_auroc",
+        "tangent_detection_auroc",
+        "natural_top3_recall_c1",
+        "selection_accuracy_c1",
+        "exact_operator_recovery_c1",
+        "unknown_rejection_c2",
+    )
+    labels = (
+        "Magnitude AUROC",
+        "Tangent AUROC",
+        "Natural top-3",
+        "Selection",
+        "Exact recovery",
+        "C2 unknown",
+    )
+    values = [float(metric_index[name]["mean"]) for name in metrics]
+    figure, axis = plt.subplots(figsize=(8.5, 4.5))
+    axis.bar(range(len(metrics)), values, color=("#999999", "#009e73", "#e69f00", "#56b4e9", "#0072b2", "#d55e00"))
+    axis.set_xticks(range(len(metrics)), labels, rotation=20, ha="right")
+    axis.set_ylabel("Rate / AUROC")
+    axis.set_ylim(0, 1.05)
+    axis.grid(axis="y", alpha=0.25)
+    figure.tight_layout()
+    figure.savefig(root / "mechanism_transport.png", dpi=180)
+    plt.close(figure)
+
+    models = ("physics", "no_revision", "frozen_v6")
+    model_labels = {"physics": "Pure physics", "no_revision": "Residual / no revision", "frozen_v6": "Frozen V6"}
+    colors = {"physics": "#999999", "no_revision": "#e69f00", "frozen_v6": "#0072b2"}
+    regimes = ("c0_parameter", "c1_drag", "c2_hysteresis")
+    figure, axes = plt.subplots(1, 3, figsize=(13, 4.2), sharey=True)
+    for axis, regime in zip(axes, regimes):
+        for model in models:
+            selected = [row for row in horizons if row["model"] == model and row["regime"] == regime]
+            grouped = {}
+            for row in selected:
+                grouped.setdefault(int(row["horizon"]), []).append(float(row["state_rmse"]))
+            xs = sorted(grouped)
+            ys = [sum(grouped[x]) / len(grouped[x]) for x in xs]
+            axis.plot(xs, ys, marker="o", color=colors[model], label=model_labels[model])
+        axis.set_title(regime)
+        axis.set_xlabel("Counterfactual horizon")
+        axis.grid(alpha=0.25)
+    axes[0].set_ylabel("Normalized local-state RMSE")
+    axes[-1].legend(frameon=False, fontsize=8)
+    figure.tight_layout()
+    figure.savefig(root / "counterfactual_rollout.png", dpi=180)
+    plt.close(figure)
+
+    before = float(metric_index["residual_usage_before_c1"]["mean"])
+    after = float(metric_index["residual_usage_after_c1"]["mean"])
+    assimilation = float(metric_index["residual_assimilation_ratio_c1"]["mean"])
+    figure, axis = plt.subplots(figsize=(5.5, 4.2))
+    axis.bar((0, 1), (before, after), color=("#d55e00", "#0072b2"))
+    axis.set_xticks((0, 1), ("Before revision", "After revision"))
+    axis.set_ylabel("Residual fallback rate (C1)")
+    axis.set_ylim(0, 1.05)
+    axis.set_title(f"Residual assimilation ratio = {assimilation:.3f}")
+    axis.grid(axis="y", alpha=0.25)
+    figure.tight_layout()
+    figure.savefig(root / "residual_assimilation.png", dpi=180)
+    plt.close(figure)
+
+
+def plot_v6r01(output_dir: str | Path) -> None:
+    root = Path(output_dir)
+    samples = _read_csv(root / "force_samples.csv")
+    aggregate = _read_csv(root / "metrics_aggregate.csv")
+    metric_index = {row["metric"]: row for row in aggregate}
+    c0 = [row for row in samples if row["regime"] == "c0_parameter"]
+    plt = _matplotlib()
+
+    stride = max(1, len(c0) // 1500)
+    displayed = c0[::stride]
+    residual = [float(row["observed_force_residual"]) for row in displayed]
+    figure, axes = plt.subplots(1, 2, figsize=(10, 4.2), sharey=True)
+    axes[0].scatter(
+        [float(row["q"]) for row in displayed], residual, s=7, alpha=0.35
+    )
+    axes[1].scatter(
+        [float(row["qvel"]) for row in displayed], residual, s=7, alpha=0.35
+    )
+    axes[0].set_xlabel("Hinge position q")
+    axes[1].set_xlabel("Hinge velocity qdot")
+    axes[0].set_ylabel("Observed generalized-force residual")
+    for axis in axes:
+        axis.axhline(0.0, color="#333333", linewidth=0.8)
+        axis.grid(alpha=0.2)
+    figure.suptitle("V6R0.1 C0 closure: state-dependence audit")
+    figure.tight_layout()
+    figure.savefig(root / "c0_closure_diagnostics.png", dpi=180)
+    plt.close(figure)
+
+    if "tangent_detection_auroc" not in metric_index:
+        return
+    metrics = (
+        "tangent_detection_auroc",
+        "magnitude_detection_auroc",
+        "c1_drag_top1_recovery",
+        "c1_drag_top3_recovery",
+        "c1_structural_trigger_recall",
+    )
+    labels = ("Tangent AUROC", "Magnitude AUROC", "Drag top-1", "Drag top-3", "C1 trigger")
+    values = [float(metric_index[name]["mean"]) for name in metrics]
+    figure, axis = plt.subplots(figsize=(7.5, 4.3))
+    axis.bar(range(len(metrics)), values, color=("#009e73", "#999999", "#0072b2", "#56b4e9", "#e69f00"))
+    axis.set_xticks(range(len(metrics)), labels, rotation=18, ha="right")
+    axis.set_ylabel("Rate / AUROC")
+    axis.set_ylim(0.0, 1.05)
+    axis.grid(axis="y", alpha=0.25)
+    figure.tight_layout()
+    figure.savefig(root / "c1_force_space_recovery.png", dpi=180)
+    plt.close(figure)
+
+
+def plot_v6r02(output_dir: str | Path) -> None:
+    root = Path(output_dir)
+    aggregate = _read_csv(root / "metrics_aggregate.csv")
+    horizons = _read_csv(root / "rollout_horizons.csv")
+    metric_index = {row["metric"]: row for row in aggregate}
+    plt = _matplotlib()
+
+    metrics = (
+        "tangent_detection_auroc",
+        "natural_candidate_coverage_c1",
+        "selection_accuracy_c1",
+        "acceptance_power_c1_correct_selection",
+        "exact_operator_recovery_c1",
+        "residual_assimilation_ratio_c1",
+    )
+    labels = ("Tangent AUROC", "Proposal", "Selection", "Acceptance", "Exact", "Assimilation")
+    values = [float(metric_index[name]["mean"]) for name in metrics]
+    figure, axis = plt.subplots(figsize=(8.4, 4.4))
+    axis.bar(range(len(metrics)), values, color=("#009e73", "#e69f00", "#56b4e9", "#cc79a7", "#0072b2", "#d55e00"))
+    axis.set_xticks(range(len(metrics)), labels, rotation=18, ha="right")
+    axis.set_ylabel("Rate / AUROC")
+    axis.set_ylim(0.0, 1.05)
+    axis.grid(axis="y", alpha=0.25)
+    figure.tight_layout()
+    figure.savefig(root / "force_space_revision_chain.png", dpi=180)
+    plt.close(figure)
+
+    models = ("physics", "no_revision", "frozen_v6")
+    labels_by_model = {
+        "physics": "Pure physics",
+        "no_revision": "Residual / no revision",
+        "frozen_v6": "Frozen V6",
+    }
+    colors = {"physics": "#999999", "no_revision": "#e69f00", "frozen_v6": "#0072b2"}
+    figure, axes = plt.subplots(1, 2, figsize=(10, 4.2), sharey=True)
+    for axis, regime in zip(axes, ("c0_parameter", "c1_drag")):
+        for model in models:
+            selected = [row for row in horizons if row["model"] == model and row["regime"] == regime]
+            grouped = {}
+            for row in selected:
+                grouped.setdefault(int(row["horizon"]), []).append(float(row["state_rmse"]))
+            xs = sorted(grouped)
+            ys = [sum(grouped[x]) / len(grouped[x]) for x in xs]
+            axis.plot(xs, ys, marker="o", color=colors[model], label=labels_by_model[model])
+        axis.set_title(regime)
+        axis.set_xlabel("Counterfactual horizon")
+        axis.grid(alpha=0.25)
+    axes[0].set_ylabel("Normalized local-state RMSE")
+    axes[-1].legend(frameon=False, fontsize=8)
+    figure.tight_layout()
+    figure.savefig(root / "force_space_rollout.png", dpi=180)
+    plt.close(figure)
+
+
+def plot_v6r03(output_dir: str | Path) -> None:
+    root = Path(output_dir)
+    aggregate = _read_csv(root / "metrics_aggregate.csv")
+    horizons = _read_csv(root / "rollout_horizons.csv")
+    metric_index = {row["metric"]: row for row in aggregate}
+    plt = _matplotlib()
+
+    metrics = (
+        "c0_false_revision",
+        "c1_exact_recovery",
+        "c2_unknown_rejection",
+        "c2_forced_wrong_revision",
+        "native_revision_rate",
+        "native_assimilation_ratio",
+    )
+    labels = ("C0 false revision", "C1 exact", "C2 unknown", "C2 wrong", "Native revision", "Native assimilation")
+    values = [float(metric_index[name]["mean"]) for name in metrics]
+    figure, axis = plt.subplots(figsize=(8.8, 4.4))
+    axis.bar(range(len(metrics)), values, color=("#d55e00", "#0072b2", "#009e73", "#cc79a7", "#e69f00", "#56b4e9"))
+    axis.set_xticks(range(len(metrics)), labels, rotation=19, ha="right")
+    axis.set_ylabel("Rate")
+    axis.set_ylim(0.0, 1.05)
+    axis.grid(axis="y", alpha=0.25)
+    figure.tight_layout()
+    figure.savefig(root / "formal_bridge_mechanism.png", dpi=180)
+    plt.close(figure)
+
+    models = ("physics", "no_revision", "frozen_v6")
+    labels_by_model = {"physics": "Pure physics", "no_revision": "Residual / no revision", "frozen_v6": "Frozen V6"}
+    colors = {"physics": "#999999", "no_revision": "#e69f00", "frozen_v6": "#0072b2"}
+    regimes = ("c0_parameter", "c1_drag", "c2_history", "r0n_native")
+    figure, axes = plt.subplots(2, 2, figsize=(11, 8), sharey=False)
+    for axis, regime in zip(axes.flatten(), regimes):
+        for model in models:
+            selected = [row for row in horizons if row["model"] == model and row["regime"] == regime]
+            grouped = {}
+            for row in selected:
+                grouped.setdefault(int(row["horizon"]), []).append(float(row["state_rmse"]))
+            xs = sorted(grouped)
+            ys = [sum(grouped[x]) / len(grouped[x]) for x in xs]
+            axis.plot(xs, ys, marker="o", color=colors[model], label=labels_by_model[model])
+        valid_h16 = [float(row["valid_window_fraction"]) for row in horizons if row["regime"] == regime and int(row["horizon"]) == 16]
+        axis.set_title(f"{regime} (H16 valid={sum(valid_h16)/len(valid_h16):.2f})")
+        axis.set_xlabel("Counterfactual horizon")
+        axis.set_ylabel("Valid-window state RMSE")
+        axis.grid(alpha=0.25)
+    axes[0, 1].legend(frameon=False, fontsize=8)
+    figure.tight_layout()
+    figure.savefig(root / "formal_bridge_rollout.png", dpi=180)
+    plt.close(figure)
+
+
+def plot_v6r04a(output_dir: str | Path) -> None:
+    root = Path(output_dir)
+    rows = _read_csv(root / "strategy_horizons.csv")
+    plt = _matplotlib()
+    strategies = ("physics", "no_revision", "force_only", "rollout", "rollout_stability", "rollout_stability_parameter")
+    labels = {
+        "physics": "Physics", "no_revision": "No revision",
+        "force_only": "Force only", "rollout": "+ rollout",
+        "rollout_stability": "+ stability", "rollout_stability_parameter": "+ parameter gate",
+    }
+    colors = ("#999999", "#e69f00", "#d55e00", "#0072b2", "#009e73", "#56b4e9")
+    figure, axis = plt.subplots(figsize=(8.2, 4.8))
+    for strategy, color in zip(strategies, colors):
+        selected = [row for row in rows if row["strategy"] == strategy]
+        grouped = {}
+        for row in selected:
+            grouped.setdefault(int(row["horizon"]), []).append(float(row["state_rmse"]))
+        xs = sorted(grouped)
+        ys = [sum(grouped[x]) / len(grouped[x]) for x in xs]
+        axis.plot(xs, ys, marker="o", color=color, label=labels[strategy])
+    axis.set_xlabel("Independent evaluation horizon")
+    axis.set_ylabel("Valid-window native state RMSE")
+    axis.grid(alpha=0.25)
+    axis.legend(frameon=False, fontsize=8, ncol=2)
+    figure.tight_layout()
+    figure.savefig(root / "rollout_aware_acceptance.png", dpi=180)
+    plt.close(figure)
+
+
+def plot_v6r04b(output_dir: str | Path) -> None:
+    root = Path(output_dir)
+    rows = _read_csv(root / "fallback_horizons.csv")
+    plt = _matplotlib()
+    strategies = (
+        "physics", "memoryless", "history", "utility_memoryless",
+        "utility_history", "oracle_history",
+    )
+    labels = {
+        "physics": "Physics",
+        "memoryless": "Memoryless",
+        "history": "History",
+        "utility_memoryless": "Utility-gated memoryless",
+        "utility_history": "Utility-gated history",
+        "oracle_history": "Oracle history",
+    }
+    colors = ("#999999", "#d55e00", "#0072b2", "#e69f00", "#009e73", "#56b4e9")
+    figure, axis = plt.subplots(figsize=(8.2, 4.8))
+    for strategy, color in zip(strategies, colors):
+        selected = [row for row in rows if row["strategy"] == strategy]
+        grouped = {}
+        for row in selected:
+            grouped.setdefault(int(row["horizon"]), []).append(float(row["state_rmse"]))
+        xs = sorted(grouped)
+        ys = [sum(grouped[x]) / len(grouped[x]) for x in xs]
+        axis.plot(xs, ys, marker="o", color=color, label=labels[strategy])
+    axis.set_xlabel("Sequential rollout horizon")
+    axis.set_ylabel("Valid-window state RMSE")
+    axis.grid(alpha=0.25)
+    axis.legend(frameon=False, fontsize=8, ncol=2)
+    figure.tight_layout()
+    figure.savefig(root / "history_aware_fallback.png", dpi=180)
+    plt.close(figure)
+
+
+def plot_v6r05(output_dir: str | Path) -> None:
+    root = Path(output_dir)
+    rows = _read_csv(root / "diagnostic_rankings.csv")
+    rows = [
+        row for row in rows
+        if row["cohort"] in ("selection", "confirmation")
+        and row["stratum"] == "force_accepted"
+    ]
+    signals = []
+    for row in rows:
+        if row["signal"] not in signals:
+            signals.append(row["signal"])
+    selection = {
+        row["signal"]: float(row["unsafe_auroc"])
+        for row in rows if row["cohort"] == "selection"
+    }
+    confirmation = {
+        row["signal"]: float(row["unsafe_auroc"])
+        for row in rows if row["cohort"] == "confirmation"
+    }
+    plt = _matplotlib()
+    figure, axis = plt.subplots(figsize=(9.5, 5.4))
+    positions = list(range(len(signals)))
+    axis.bar(
+        [position - 0.19 for position in positions],
+        [selection[signal] for signal in signals],
+        width=0.38,
+        color="#0072b2",
+        label="Selection cohort",
+    )
+    axis.bar(
+        [position + 0.19 for position in positions],
+        [confirmation[signal] for signal in signals],
+        width=0.38,
+        color="#d55e00",
+        label="Confirmation cohort",
+    )
+    axis.axhline(0.5, color="#555555", linestyle="--", linewidth=1)
+    axis.set_ylim(0.0, 1.0)
+    axis.set_ylabel("AUROC for H16-unsafe revision")
+    axis.set_xticks(positions)
+    axis.set_xticklabels(signals, rotation=35, ha="right", fontsize=8)
+    axis.grid(axis="y", alpha=0.25)
+    axis.legend(frameon=False)
+    figure.tight_layout()
+    figure.savefig(root / "dynamical_diagnostic_auroc.png", dpi=180)
+    plt.close(figure)
+
+
+def plot_v6r05p(output_dir: str | Path) -> None:
+    root = Path(output_dir)
+    rows = _read_csv(root / "direction_summary.csv")
+    plt = _matplotlib()
+    figure, axes = plt.subplots(1, 2, figsize=(10.2, 4.6), sharex=True)
+    colors = {"dissipative": "#0072b2", "active": "#d55e00"}
+    for axis, parameterization in zip(axes, ("fixed_theta", "refit_theta")):
+        selected = [row for row in rows if row["parameterization"] == parameterization]
+        for direction in ("dissipative", "active"):
+            direction_rows = sorted(
+                [row for row in selected if row["power_direction"] == direction],
+                key=lambda row: float(row["alpha_magnitude"]),
+            )
+            axis.plot(
+                [float(row["alpha_magnitude"]) for row in direction_rows],
+                [float(row["h16_unsafe_rate"]) for row in direction_rows],
+                marker="o",
+                color=colors[direction],
+                label=direction.capitalize(),
+            )
+        axis.set_title(parameterization.replace("_", " ").title())
+        axis.set_xlabel("Symmetric |alpha|")
+        axis.set_ylim(-0.03, 1.03)
+        axis.grid(alpha=0.25)
+    axes[0].set_ylabel("H16 unsafe rate")
+    axes[1].legend(frameon=False)
+    figure.tight_layout()
+    figure.savefig(root / "passivity_falsification.png", dpi=180)
+    plt.close(figure)
+
+
+def plot_v6r06(output_dir: str | Path) -> None:
+    root = Path(output_dir)
+    rows = _read_csv(root / "strategy_horizons.csv")
+    rows = [row for row in rows if row["regime"] == "r0n_native"]
+    strategies = (
+        "no_revision", "original_short", "passivity_only",
+        "passivity_utility", "oracle_safe_useful",
+    )
+    labels = {
+        "no_revision": "No revision",
+        "original_short": "Original short",
+        "passivity_only": "Passivity only",
+        "passivity_utility": "Passivity + utility",
+        "oracle_safe_useful": "Oracle safe/useful",
+    }
+    colors = ("#999999", "#d55e00", "#56b4e9", "#009e73", "#0072b2")
+    plt = _matplotlib()
+    figure, axis = plt.subplots(figsize=(8.2, 4.8))
+    for strategy, color in zip(strategies, colors):
+        selected = [row for row in rows if row["strategy"] == strategy]
+        grouped = {}
+        for row in selected:
+            grouped.setdefault(int(row["horizon"]), []).append(float(row["state_rmse"]))
+        xs = sorted(grouped)
+        ys = [sum(grouped[x]) / len(grouped[x]) for x in xs]
+        axis.plot(xs, ys, marker="o", color=color, label=labels[strategy])
+    axis.set_xlabel("Independent native rollout horizon")
+    axis.set_ylabel("Valid-window state RMSE")
+    axis.grid(alpha=0.25)
+    axis.legend(frameon=False, fontsize=8)
+    figure.tight_layout()
+    figure.savefig(root / "two_layer_revision.png", dpi=180)
+    plt.close(figure)

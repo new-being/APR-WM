@@ -236,3 +236,85 @@ V6 发现 V5 在 `σ=0.10` 的 acceptance collapse 部分来自固定 RMSE 阈�
 ## 研究边界
 
 这是验证机制的受控 toy environment，不是最终具身系统。V1–V6 已逐步加入 unknown-physics posterior、主动辨识、开放集 revision、operator discovery、noisy discrimination 与 adaptive validation，但仍未覆盖端到端视觉、长时闭环控制、真实机器人数据或能耗测量。V5/V6 的结构恢复还条件于受控 trigger 与 candidate availability；V6 的 BF 是 plug-in surrogate，也不提供理论上的 anytime-valid false-revision 保证。
+
+## V6R0 Realism-bridge Preflight
+
+V6R0 已加入 oracle-state SAPIEN 铰链后端、R0-C 三种 regime、counterfactual branch manifest、`H=1/4/8/16` rollout、RoboTwin capability gate 和 residual assimilation 指标。当前三开发种子运行被明确标记为 `R0-C headless SAPIEN hinge proxy`，没有冒充官方 RoboTwin Open Laptop。
+
+```bash
+/home/dong/miniconda3/envs/RoboTwin/bin/python -m aprwm_v0 v6r0-doctor \
+  --robotwin-repo /home/dong/Projects/RoboTwin
+
+/home/dong/miniconda3/envs/RoboTwin/bin/python -m aprwm_v0 v6r0-smoke \
+  --output runs/v6r0/smoke \
+  --device cpu \
+  --seeds 13 23 33 \
+  --episodes-per-regime 24
+```
+
+预检没有通过扩大实验的门槛：pure physics 在全部 aggregate regime/horizon 上优于 no-revision residual 与 frozen V6；C1 exact recovery 仅 `1.39%`，C0 false revision 为 `2.78%`。原因是冻结的二维接口用 `[torque, qdot] -> qddot`，不能把 C0 表达成结构正确的 articulated physics，导致原生动力学残差与注入 C1 算子混叠。下一步必须先改成保留 `[q,qdot,torque]` 的 generalized-force residual，并验证 C0 residual 接近噪声地板；在此之前不进入正式 RoboTwin/R0-N/RGB。完整诊断、验收表和资产阻塞见 [V6R0_PREFLIGHT_REPORT.md](V6R0_PREFLIGHT_REPORT.md)。
+
+## V6R0.1 Generalized-force Interface Validation
+
+R0.1 保留 oracle local state `[q,qdot,torque]`，把残差改为
+
+```text
+r_tau = M(q) qdd + h(q,qdot) - tau_known
+```
+
+并显式清零 SAPIEN builder 后仍保留的 `0.05` joint friction 及 link damping。命令严格先跑 C0；三个开发 seed 全部通过 closure gate 后，才自动执行最小 C1 force-operator recovery，不运行完整 V6、C2 或 rollout：
+
+```bash
+/home/dong/miniconda3/envs/RoboTwin/bin/python -m aprwm_v0 v6r01-closure \
+  --output runs/v6r01/closure \
+  --device cpu \
+  --seeds 13 23 33 \
+  --episodes 24 \
+  --samples-per-episode 48
+```
+
+C0 clean force RMSE 为 `1.248e-7`，noise variance ratio 为 `1.041`，最大 `q/qdot` 相关性为 `0.031`，结构触发率为 `0%`。随后 C1 tangent AUROC、drag top-1/top-3 recovery 均为 `1.0`，估计系数 `-0.11984` 对应真值 `-0.12`，拟合后 residual 回到 `0.00198` 的噪声地板。这支持 prior no-go 的 interface diagnosis，但尚不支持 full-V6 false-revision、rollout 或 RoboTwin claim。完整边界见 [V6R01_REPORT.md](V6R01_REPORT.md)。
+
+## V6R0.2 Frozen V6 Force-space Reintegration
+
+R0.2 在 C0/C1 中恢复冻结的 tangent trigger、V4 operator proposal、V5 posterior-weighted selection、V6 dual sequential acceptance 及 residual assimilation。参数切空间使用 `J_theta`，结构算子独立使用 `[q,qdot]`，避免重新混淆物理坐标。
+
+```bash
+/home/dong/miniconda3/envs/RoboTwin/bin/python -m aprwm_v0 v6r02 \
+  --output runs/v6r02/trigger_gated \
+  --device cpu \
+  --seeds 13 23 33 \
+  --episodes-per-regime 24
+```
+
+三个开发 seed 上，C0 false revision 为 `0%`，最大 aggregate V6–physics rollout gap 为 `1.88e-4`，通过 `0.002` non-inferiority margin。C1 proposal、selection、acceptance、exact recovery 与 assimilation 均为 `100%`；相对 no-revision 的 H1/H4/H8/H16 RMSE 改善分别为 `0.00204/0.00678/0.01170/0.02565`。结果支持完整 self-revision loop 在 force space 中稳定运行，但还不构成严格 `<1%` population safety 保证，也未覆盖 C2、joint-limit contact、R0-N 或官方 RoboTwin。完整诊断见 [V6R02_REPORT.md](V6R02_REPORT.md)。
+
+## V6R0.3 Formal Held-out SAPIEN Bridge
+
+R0.3 冻结 R0.2 全部机制和阈值，在 `1001/1011/1021/1031/1041` 五个 held-out seeds 上加入 history-dependent C2 与保留 PhysX 原生摩擦/阻尼的 R0-N。每个 rollout window 自动记录 joint-limit validity；超出当前模型支持域的 window 不进入 RMSE，但保留在 coverage 指标中。
+
+```bash
+/home/dong/miniconda3/envs/RoboTwin/bin/python -m aprwm_v0 v6r03 \
+  --output runs/v6r03/formal \
+  --device cpu \
+  --seeds 1001 1011 1021 1031 1041 \
+  --episodes-per-regime 24
+```
+
+正式结果为 overall no-go。C0 non-inferiority/false revision、C1 rollout/assimilation、C2 unknown rejection 与 validity coverage 均过 gate；C2 unknown rejection 为 `95.83%`，但无 history 输入的 fallback 在 H16 比 physics 更差。R0-N 中 `21.67%` episode 接受 revision，独立 one-step validation gain 为 `+0.00492`，但 H16 V6 RMSE 从 no-revision 的 `0.333` 恶化到 `2.032`，accepted revision 的 H16 gain 为 `-2.91`。这证明当前瓶颈是 rollout-safe acceptance 和 fallback utility，而不是 force-space closure。完整结果见 [V6R03_REPORT.md](V6R03_REPORT.md)。
+
+## V6R0.4 Dynamical Acceptance + History-aware Fallback
+
+R0.4 拆为两个独立实验。R0.4-A 的首批消融显示 `H={2,4,8}` short-rollout gate 可将 native H16 从 force-only 的 `1.948` 降至 `0.337`；但在策略固定后的全新确认 seeds 上，H16 为 `0.639`，仍差于 no-revision 的 `0.369`，accepted stability 也只有 `98.125%`，因此 revision gate 仍是 no-go。R0.4-B 则通过：在 delayed-torque C2 中，三步 action history 将 H16 从 physics 的 `0.01666` 降至 `0.00243`，而 12 维 memoryless fallback 恶化至 `0.04995`。这支持 state-closure 诊断，但不改变整体 RoboTwin no-go。完整协议、选择/确认分离及结果见 [V6R04_REPORT.md](V6R04_REPORT.md)。
+
+## V6R0.5 Dynamical-safety Diagnostics
+
+R0.5 不再修改 acceptance，而是回放 R0.4 revision episodes 并用 H16 outcome 做无阈值 AUROC 排序。one-step force-accepted revisions 中，selection/confirmation 分别有 `6/20` 与 `5/19` unsafe；正 revision 功率、负有效阻尼、Jacobian 谱半径的 AUROC 分别为 `0.988/1.000`、`0.917/1.000`、`0.833/1.000`，Mahalanobis 为 `0.738/0.871`，Euclidean 参数位移与 force gain 接近无效。当前失败主要来自正系数 `abs_v_v` 反阻尼 revision，但 operator identity 与安全标签高度混杂；严格 H2/H4/H8-accepted 子集也只有一个 H16 failure。因此结果支持 passivity-constrained R0.6 假设，却还不构成通用安全判据。完整边界见 [V6R05_REPORT.md](V6R05_REPORT.md)。
+
+## V6R0.5P Operator-controlled Passivity Falsification
+
+R0.5P 固定 `abs_v_v` operator，并在五个全新 seeds 上对称干预 `alpha=+-{0.15,0.30,0.45}`。冻结参数时 active/dissipative H16 instability 为 `95.83%/0%`，条件重拟合参数后为 `87.78%/0%`；power-violation fraction 对 instability 的 AUROC 为 `0.990/0.967`，且每个 seed 都保持 `>0.95`。在重拟合层，76 个 active 与 80 个 dissipative candidate 均通过 H2/H4/H8；其 H16 instability 分别为 `57.89%/0%`。但 dissipative candidate 仍常因过度耗散而产生负 utility，因此 passivity 是该算子族的稳定性结构条件，不是准确性或 acceptance 的充分条件。未实现 R0.6。完整结果见 [V6R05P_REPORT.md](V6R05P_REPORT.md)。
+
+## V6R0.6 Passivity-feasible + Utility-accepted Revision
+
+R0.6 将 acceptance 拆为物理可行性与预测效用两层：耗散算子在 `alpha<=0` 的结构保持空间中进行弱 posterior-regularized MAP 拟合，再用等权 H2/H4/H8 utility 决定是否持久化。在未使用过的 `7001–7041` seeds 上，native H16 从 no-revision 的 `0.32833` 降至 `0.23468`，accepted stability `100%`，接受率 `85%`，useful recall/precision 为 `93.68%/87.25%`；C0 false revision `0%`，C1 exact recovery `100%`。原始 short-rollout baseline 再次崩到 `0.99785`。全部预注册 gate 通过，因此轻量 SAPIEN realism gate 可以解除；但 utility 层并未优于 passivity-only (`0.23468` vs `0.23449`)，且 overdamping ratio 仍为 `1.98`。这使 RoboTwin task 实验变得合理，并不等于已经在 RoboTwin 成立。完整边界见 [V6R06_REPORT.md](V6R06_REPORT.md)。

@@ -27,6 +27,16 @@ from .v3 import V3Config, run_v3
 from .v4 import V4Config, run_v4
 from .v5 import V5Config, run_v5
 from .v6 import V6Config, run_v6
+from .r0 import V6R0Config, inspect_robotwin, run_v6r0_smoke
+from .r01 import V6R01Config, run_v6r01_closure
+from .r02 import V6R02Config, run_v6r02
+from .r03 import V6R03Config, run_v6r03
+from .r04a import V6R04AConfig, run_v6r04a
+from .r04b import V6R04BConfig, run_v6r04b
+from .r05 import V6R05Config, run_v6r05
+from .r05p import V6R05PConfig, run_v6r05p
+from .r06 import V6R06Config, run_v6r06
+from .r1_ms import run_preflight as run_r1_ms_preflight
 
 
 def apply_overrides(config: ExperimentConfig, args: argparse.Namespace) -> ExperimentConfig:
@@ -241,6 +251,130 @@ def build_parser() -> argparse.ArgumentParser:
         default=[0.0, 0.025, 0.05, 0.10, 0.15],
     )
 
+    r0_doctor_parser = subparsers.add_parser(
+        "v6r0-doctor", help="Check RoboTwin/SAPIEN readiness and task limitations"
+    )
+    r0_doctor_parser.add_argument(
+        "--robotwin-repo", default="/home/dong/Projects/RoboTwin"
+    )
+    r0_doctor_parser.add_argument(
+        "--robotwin-python",
+        default="/home/dong/miniconda3/envs/RoboTwin/bin/python",
+    )
+
+    r0_parser = subparsers.add_parser(
+        "v6r0-smoke", help="Run the three-seed controlled SAPIEN hinge bridge"
+    )
+    r0_parser.add_argument("--output", default="runs/v6r0/smoke")
+    r0_parser.add_argument("--device", default="cpu")
+    r0_parser.add_argument("--seeds", nargs="+", type=int, default=[13, 23, 33])
+    r0_parser.add_argument("--episodes-per-regime", type=int, default=24)
+    r0_parser.add_argument(
+        "--robotwin-repo", default="/home/dong/Projects/RoboTwin"
+    )
+
+    r01_parser = subparsers.add_parser(
+        "v6r01-closure",
+        help="Validate the SAPIEN hinge interface in generalized-force coordinates",
+    )
+    r01_parser.add_argument("--output", default="runs/v6r01/closure")
+    r01_parser.add_argument("--device", default="cpu")
+    r01_parser.add_argument("--seeds", nargs="+", type=int, default=[13, 23, 33])
+    r01_parser.add_argument("--episodes", type=int, default=24)
+    r01_parser.add_argument("--samples-per-episode", type=int, default=48)
+
+    r02_parser = subparsers.add_parser(
+        "v6r02",
+        help="Reintegrate frozen V6 in generalized-force coordinates",
+    )
+    r02_parser.add_argument("--output", default="runs/v6r02/smoke")
+    r02_parser.add_argument("--device", default="cpu")
+    r02_parser.add_argument("--seeds", nargs="+", type=int, default=[13, 23, 33])
+    r02_parser.add_argument("--episodes-per-regime", type=int, default=24)
+
+    r03_parser = subparsers.add_parser(
+        "v6r03",
+        help="Run held-out C0/C1/C2/native SAPIEN bridge evaluation",
+    )
+    r03_parser.add_argument("--output", default="runs/v6r03/formal")
+    r03_parser.add_argument("--device", default="cpu")
+    r03_parser.add_argument(
+        "--seeds", nargs="+", type=int, default=[1001, 1011, 1021, 1031, 1041]
+    )
+    r03_parser.add_argument("--episodes-per-regime", type=int, default=24)
+
+    r04a_parser = subparsers.add_parser(
+        "v6r04a",
+        help="Run rollout-aware native revision acceptance experiment",
+    )
+    r04a_parser.add_argument("--output", default="runs/v6r04a/confirmatory")
+    r04a_parser.add_argument("--device", default="cpu")
+    r04a_parser.add_argument(
+        "--seeds", nargs="+", type=int, default=[4001, 4011, 4021, 4031, 4041]
+    )
+    r04a_parser.add_argument("--episodes", type=int, default=24)
+
+    r04b_parser = subparsers.add_parser(
+        "v6r04b",
+        help="Run history-aware C2 residual fallback experiment",
+    )
+    r04b_parser.add_argument("--output", default="runs/v6r04b/formal")
+    r04b_parser.add_argument("--device", default="cpu")
+    r04b_parser.add_argument(
+        "--seeds", nargs="+", type=int, default=[3001, 3011, 3021, 3031, 3041]
+    )
+    r04b_parser.add_argument("--episodes", type=int, default=24)
+
+    r05_parser = subparsers.add_parser(
+        "v6r05",
+        help="Rank dynamical safety diagnostics on R0.4 revision episodes",
+    )
+    r05_parser.add_argument("--output", default="runs/v6r05/diagnostics")
+    r05_parser.add_argument("--device", default="cpu")
+    r05_parser.add_argument(
+        "--selection-seeds", nargs="+", type=int,
+        default=[2001, 2011, 2021, 2031, 2041],
+    )
+    r05_parser.add_argument(
+        "--confirmation-seeds", nargs="+", type=int,
+        default=[4001, 4011, 4021, 4031, 4041],
+    )
+    r05_parser.add_argument("--episodes", type=int, default=24)
+
+    r05p_parser = subparsers.add_parser(
+        "v6r05p",
+        help="Run operator-controlled passivity falsification benchmark",
+    )
+    r05p_parser.add_argument("--output", default="runs/v6r05p/formal")
+    r05p_parser.add_argument("--device", default="cpu")
+    r05p_parser.add_argument(
+        "--seeds", nargs="+", type=int, default=[5001, 5011, 5021, 5031, 5041]
+    )
+    r05p_parser.add_argument("--episodes", type=int, default=24)
+
+    r06_parser = subparsers.add_parser(
+        "v6r06",
+        help="Run passivity-feasible then rollout-utility revision",
+    )
+    r06_parser.add_argument("--output", default="runs/v6r06/confirmatory")
+    r06_parser.add_argument("--device", default="cpu")
+    r06_parser.add_argument(
+        "--seeds", nargs="+", type=int, default=[7001, 7011, 7021, 7031, 7041]
+    )
+    r06_parser.add_argument("--episodes", type=int, default=24)
+
+    r1_ms_parser = subparsers.add_parser(
+        "r1-ms-preflight",
+        help="Freeze and inspect the Drawer-only ManiSkill R1-MS0 protocol",
+    )
+    r1_ms_parser.add_argument("--output", default="runs/r1_ms/preflight")
+    r1_ms_parser.add_argument(
+        "--python", default=".venv-maniskill/bin/python"
+    )
+    r1_ms_parser.add_argument(
+        "--asset-root", default=".maniskill"
+    )
+
     eval_parser = subparsers.add_parser("evaluate", help="Evaluate a saved checkpoint")
     eval_parser.add_argument("--checkpoint", required=True)
     eval_parser.add_argument("--device", default="auto")
@@ -424,6 +558,116 @@ def main(argv: list[str] | None = None) -> None:
 
         plot_v6(args.output)
         print(json.dumps(result, indent=2))
+        return
+    if args.command == "v6r0-doctor":
+        result = inspect_robotwin(args.robotwin_repo, args.robotwin_python)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return
+    if args.command == "v6r0-smoke":
+        config = V6R0Config(
+            seeds=tuple(args.seeds),
+            episodes_per_regime=args.episodes_per_regime,
+        )
+        result = run_v6r0_smoke(
+            args.output,
+            device_name=args.device,
+            config=config,
+            robotwin_repo=args.robotwin_repo,
+        )
+        from .plots import plot_v6r0
+
+        plot_v6r0(args.output)
+        print(json.dumps(result, indent=2))
+        return
+    if args.command == "v6r01-closure":
+        config = V6R01Config(
+            seeds=tuple(args.seeds),
+            episodes=args.episodes,
+            samples_per_episode=args.samples_per_episode,
+        )
+        result = run_v6r01_closure(
+            args.output, device_name=args.device, config=config
+        )
+        from .plots import plot_v6r01
+
+        plot_v6r01(args.output)
+        print(json.dumps(result, indent=2))
+        return
+    if args.command == "v6r02":
+        config = V6R02Config(
+            seeds=tuple(args.seeds),
+            episodes_per_regime=args.episodes_per_regime,
+        )
+        result = run_v6r02(args.output, device_name=args.device, config=config)
+        from .plots import plot_v6r02
+
+        plot_v6r02(args.output)
+        print(json.dumps(result, indent=2))
+        return
+    if args.command == "v6r03":
+        config = V6R03Config(
+            seeds=tuple(args.seeds),
+            episodes_per_regime=args.episodes_per_regime,
+        )
+        result = run_v6r03(args.output, device_name=args.device, config=config)
+        from .plots import plot_v6r03
+
+        plot_v6r03(args.output)
+        print(json.dumps(result, indent=2))
+        return
+    if args.command == "v6r04a":
+        config = V6R04AConfig(seeds=tuple(args.seeds), episodes_per_regime=args.episodes)
+        result = run_v6r04a(args.output, device_name=args.device, config=config)
+        from .plots import plot_v6r04a
+
+        plot_v6r04a(args.output)
+        print(json.dumps(result, indent=2))
+        return
+    if args.command == "v6r04b":
+        config = V6R04BConfig(seeds=tuple(args.seeds), episodes_per_regime=args.episodes)
+        result = run_v6r04b(args.output, device_name=args.device, config=config)
+        from .plots import plot_v6r04b
+
+        plot_v6r04b(args.output)
+        print(json.dumps(result, indent=2))
+        return
+    if args.command == "v6r05":
+        config = V6R05Config(
+            selection_seeds=tuple(args.selection_seeds),
+            confirmation_seeds=tuple(args.confirmation_seeds),
+            episodes_per_seed=args.episodes,
+        )
+        result = run_v6r05(args.output, device_name=args.device, config=config)
+        from .plots import plot_v6r05
+
+        plot_v6r05(args.output)
+        print(json.dumps(result, indent=2))
+        return
+    if args.command == "v6r05p":
+        config = V6R05PConfig(
+            seeds=tuple(args.seeds), episodes_per_regime=args.episodes
+        )
+        result = run_v6r05p(args.output, device_name=args.device, config=config)
+        from .plots import plot_v6r05p
+
+        plot_v6r05p(args.output)
+        print(json.dumps(result, indent=2))
+        return
+    if args.command == "v6r06":
+        config = V6R06Config(
+            seeds=tuple(args.seeds), episodes_per_regime=args.episodes
+        )
+        result = run_v6r06(args.output, device_name=args.device, config=config)
+        from .plots import plot_v6r06
+
+        plot_v6r06(args.output)
+        print(json.dumps(result, indent=2))
+        return
+    if args.command == "r1-ms-preflight":
+        result = run_r1_ms_preflight(
+            args.output, python=args.python, asset_root=args.asset_root
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
         return
     if args.command == "evaluate":
         device = resolve_device(args.device)
