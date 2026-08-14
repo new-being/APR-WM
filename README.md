@@ -207,6 +207,19 @@ python -m aprwm_v0 v4 \
 
 五个 held-out seeds 上，orthogonal proposal 的 top-3 recall 为 `98.99%`，主动诊断将 exact operator recovery 从 passive 的 `43.66%` 提至 `60.45%`。Oracle proposal 只额外提升 `0.38` 个百分点，而 oracle selection 达到 `100%`，说明当前瓶颈已经从 proposal 转移到 candidate discrimination 与 held-out acceptance。主动发现还将 residual fallback 从 `65.24%` 降至 `25.76%`，保持 outside-library rejection `90.80%`、adequate incorrect expansion `0%`。完整方法、oracle gap 与边界见 [V4_REPORT.md](V4_REPORT.md)。
 
+## V5-min Noisy Sequential Hypothesis Discrimination
+
+V5-min 冻结 V4 的八算子字典与 top-3 proposal，在受控 candidate-availability 条件下比较 raw disagreement、uncertainty normalization、posterior-weighted separation、固定证据预算、sequential stopping、LCB acceptance 与两个 oracle。正式矩阵覆盖 5 seeds 和观测噪声 `0/0.025/0.05/0.10/0.15`。
+
+```bash
+python -m aprwm_v0 v5 \
+  --output runs/v5/core \
+  --device cuda \
+  --seeds 301 311 321 331 341
+```
+
+噪声 `0.05` 下，posterior-weighted 两次 probe 相对 normalized 两次 probe 将 selection 提高 `4.29` 个百分点、exact recovery 提高 `3.72` 个百分点；第三次 probe 将 exact recovery 进一步提高到 `79.42%`。Sequential 版本把平均 probe 从 `2.212` 降至 `0.906`，但 exact recovery 降至 `71.07%`，因此是 evidence-cost Pareto 点而非无条件优胜。噪声 `0.10` 时 weighted-3 selection 仍有 `73.06%`，但正确选择后的 acceptance 只剩 `30.53%`，证明高噪声瓶颈已经转移到 validation power。LCB 没有降低本已接近零的 adequate false expansion，却进一步损失 recovery。完整受控条件、配对区间、open-set 分解与局限见 [V5_REPORT.md](V5_REPORT.md)。
+
 ## 研究边界
 
-这是验证机制的受控 toy environment，不是最终具身系统。`material` 是 V0 的 oracle 物理属性；V1 才应把它改为带不确定性的 interaction belief / parameter posterior。V0.7 已补充 routing 的五 seed 统计，但仍需端到端 rollout、energy profiling，以及 unknown-physics 下 model inadequacy 与 parameter error 的显式分离。
+这是验证机制的受控 toy environment，不是最终具身系统。V1–V5 已逐步加入 unknown-physics posterior、主动辨识、开放集 revision、operator discovery 与 noisy discrimination，但仍未覆盖端到端视觉、长时闭环控制、真实机器人数据或能耗测量。V5 的结构恢复还条件于受控 trigger 与 candidate availability，不能解释为端到端高噪声 discovery 已解决。

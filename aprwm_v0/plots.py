@@ -695,3 +695,160 @@ def plot_v4(output_dir: str | Path) -> None:
     figure.tight_layout()
     figure.savefig(root / "discovery_cost_pareto.png", dpi=180)
     plt.close(figure)
+
+
+def plot_v5(output_dir: str | Path) -> None:
+    root = Path(output_dir)
+    rows = _read_csv(root / "strategies_aggregate.csv")
+    plt = _matplotlib()
+    labels = {
+        "raw_one": "Raw / 1 probe",
+        "raw_fixed2": "Raw / 2 probes",
+        "normalized_fixed2": "Normalized / 2 probes",
+        "weighted_fixed2": "Posterior-weighted / 2",
+        "weighted_fixed3": "Posterior-weighted / 3",
+        "sequential_weighted": "Sequential",
+        "sequential_lcb": "Sequential + LCB",
+        "oracle_action": "Oracle action",
+        "oracle_selection": "Oracle selection",
+    }
+    colors = {
+        "raw_one": "#aaaaaa",
+        "raw_fixed2": "#777777",
+        "normalized_fixed2": "#e69f00",
+        "weighted_fixed2": "#56b4e9",
+        "weighted_fixed3": "#0072b2",
+        "sequential_weighted": "#009e73",
+        "sequential_lcb": "#d55e00",
+        "oracle_action": "#cc79a7",
+        "oracle_selection": "#000000",
+    }
+    index = {
+        (row["strategy"], float(row["noise"]), row["metric"]): float(row["mean"])
+        for row in rows
+    }
+    noises = sorted({float(row["noise"]) for row in rows})
+
+    curves = (
+        "raw_fixed2",
+        "normalized_fixed2",
+        "weighted_fixed2",
+        "weighted_fixed3",
+        "sequential_weighted",
+        "oracle_action",
+        "oracle_selection",
+    )
+    figure, axes = plt.subplots(1, 2, figsize=(12, 4.5), sharex=True)
+    for axis, metric, ylabel in (
+        (axes[0], "selection_accuracy_given_proposal", "Selection accuracy | candidate available"),
+        (axes[1], "exact_operator_recovery", "Exact structural recovery"),
+    ):
+        for strategy in curves:
+            axis.plot(
+                noises,
+                [index[(strategy, noise, metric)] for noise in noises],
+                marker="o",
+                label=labels[strategy],
+                color=colors[strategy],
+            )
+        axis.set_xlabel("Observation-noise standard deviation")
+        axis.set_ylabel(ylabel)
+        axis.set_ylim(-0.03, 1.04)
+        axis.grid(alpha=0.25)
+    axes[1].legend(frameon=False, fontsize=8, bbox_to_anchor=(1.02, 1), loc="upper left")
+    figure.tight_layout()
+    figure.savefig(root / "noise_discrimination.png", dpi=180, bbox_inches="tight")
+    plt.close(figure)
+
+    budget_strategies = (
+        "raw_one",
+        "raw_fixed2",
+        "weighted_fixed2",
+        "weighted_fixed3",
+        "sequential_weighted",
+        "sequential_lcb",
+    )
+    figure, axes = plt.subplots(1, 2, figsize=(11, 4.3))
+    for strategy in budget_strategies:
+        axes[0].plot(
+            noises,
+            [index[(strategy, noise, "probe_count")] for noise in noises],
+            marker="o",
+            color=colors[strategy],
+            label=labels[strategy],
+        )
+    axes[0].set_xlabel("Observation-noise standard deviation")
+    axes[0].set_ylabel("Mean diagnostic probes / episode")
+    axes[0].grid(alpha=0.25)
+    representative_noise = min(noises, key=lambda value: abs(value - 0.05))
+    for strategy in budget_strategies:
+        x = index[(strategy, representative_noise, "probe_count")]
+        y = index[(strategy, representative_noise, "exact_operator_recovery")]
+        axes[1].scatter(x, y, s=65, color=colors[strategy])
+        axes[1].annotate(labels[strategy], (x, y), xytext=(4, 4), textcoords="offset points", fontsize=8)
+    axes[1].set_xlabel("Mean diagnostic probes / episode")
+    axes[1].set_ylabel("Exact structural recovery")
+    axes[1].set_title(f"Evidence-cost frontier at noise={representative_noise:g}")
+    axes[1].grid(alpha=0.25)
+    axes[0].legend(frameon=False, fontsize=8)
+    figure.tight_layout()
+    figure.savefig(root / "evidence_cost.png", dpi=180)
+    plt.close(figure)
+
+    safety_strategies = (
+        "raw_fixed2",
+        "weighted_fixed3",
+        "sequential_weighted",
+        "sequential_lcb",
+    )
+    figure, axes = plt.subplots(1, 2, figsize=(11, 4.3))
+    for strategy in safety_strategies:
+        axes[0].plot(
+            noises,
+            [index[(strategy, noise, "incorrect_expansion_rate_adequate")] for noise in noises],
+            marker="o",
+            color=colors[strategy],
+            label=labels[strategy],
+        )
+        axes[1].plot(
+            noises,
+            [index[(strategy, noise, "outside_rejection_given_trigger")] for noise in noises],
+            marker="o",
+            color=colors[strategy],
+            label=labels[strategy],
+        )
+    axes[0].set_ylabel("Incorrect expansion rate (adequate physics)")
+    axes[1].set_ylabel("Unknown rejection | natural trigger (outside library)")
+    for axis in axes:
+        axis.set_xlabel("Observation-noise standard deviation")
+        axis.set_ylim(-0.03, 1.04)
+        axis.grid(alpha=0.25)
+    axes[1].legend(frameon=False, fontsize=8)
+    figure.tight_layout()
+    figure.savefig(root / "acceptance_safety.png", dpi=180)
+    plt.close(figure)
+
+    proposal = "sequential_weighted"
+    figure, axis = plt.subplots(figsize=(6.5, 4.2))
+    axis.plot(
+        noises,
+        [index[(proposal, noise, "natural_topk_proposal_recall")] for noise in noises],
+        marker="o",
+        label="Natural top-k proposal recall",
+        color="#d55e00",
+    )
+    axis.plot(
+        noises,
+        [index[(proposal, noise, "controlled_candidate_coverage")] for noise in noises],
+        marker="o",
+        label="Controlled candidate coverage",
+        color="#0072b2",
+    )
+    axis.set_xlabel("Observation-noise standard deviation")
+    axis.set_ylabel("Recall / coverage")
+    axis.set_ylim(-0.03, 1.04)
+    axis.legend(frameon=False)
+    axis.grid(alpha=0.25)
+    figure.tight_layout()
+    figure.savefig(root / "proposal_control.png", dpi=180)
+    plt.close(figure)

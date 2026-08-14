@@ -263,7 +263,7 @@ Not established:
 6. learned complexity/action/compute prices;
 7. long-horizon control, visual perception, or real embodied data.
 
-The next bottleneck is no longer proposal recall. A justified V4.x should improve candidate discrimination and acceptance under finite noisy interventions, then move from library retrieval toward compositional operator generation without sacrificing the explicit `unknown` state.
+The next bottleneck is no longer proposal recall. V5-min therefore freezes the library and isolates candidate discrimination, sequential evidence, and acceptance under finite noisy interventions; see [`V5_REPORT.md`](V5_REPORT.md). Compositional operator generation is deferred until this discrimination boundary is understood.
 
 ## Artifacts
 
