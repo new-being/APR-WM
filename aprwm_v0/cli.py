@@ -26,6 +26,7 @@ from .v2 import V2Config, run_v2
 from .v3 import V3Config, run_v3
 from .v4 import V4Config, run_v4
 from .v5 import V5Config, run_v5
+from .v6 import V6Config, run_v6
 
 
 def apply_overrides(config: ExperimentConfig, args: argparse.Namespace) -> ExperimentConfig:
@@ -223,6 +224,23 @@ def build_parser() -> argparse.ArgumentParser:
         default=[0.0, 0.025, 0.05, 0.10, 0.15],
     )
 
+    v6_parser = subparsers.add_parser(
+        "v6", help="Run adaptive model-revision validation experiment"
+    )
+    v6_parser.add_argument("--output", default="runs/v6/core")
+    v6_parser.add_argument("--device", default="auto")
+    v6_parser.add_argument(
+        "--seeds", nargs="+", type=int, default=[401, 411, 421, 431, 441]
+    )
+    v6_parser.add_argument("--episodes", type=int, default=2048)
+    v6_parser.add_argument("--validation-max", type=int, default=32)
+    v6_parser.add_argument(
+        "--noise-levels",
+        nargs="+",
+        type=float,
+        default=[0.0, 0.025, 0.05, 0.10, 0.15],
+    )
+
     eval_parser = subparsers.add_parser("evaluate", help="Evaluate a saved checkpoint")
     eval_parser.add_argument("--checkpoint", required=True)
     eval_parser.add_argument("--device", default="auto")
@@ -392,6 +410,19 @@ def main(argv: list[str] | None = None) -> None:
         from .plots import plot_v5
 
         plot_v5(args.output)
+        print(json.dumps(result, indent=2))
+        return
+    if args.command == "v6":
+        config = V6Config(
+            seeds=tuple(args.seeds),
+            episodes=args.episodes,
+            validation_max=args.validation_max,
+            noise_levels=tuple(args.noise_levels),
+        )
+        result = run_v6(args.output, device_name=args.device, config=config)
+        from .plots import plot_v6
+
+        plot_v6(args.output)
         print(json.dumps(result, indent=2))
         return
     if args.command == "evaluate":

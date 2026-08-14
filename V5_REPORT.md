@@ -203,7 +203,7 @@ Not established:
 5. unrestricted operator generation or multi-operator composition;
 6. long-horizon control, vision, or real embodied data.
 
-The justified next step is not a larger operator library. It is an adaptive acceptance protocol that gathers additional held-out evidence when selection is strong but validation power is insufficient, with explicit type-I/type-II revision costs and calibration diagnostics.
+The justified next step is not a larger operator library. V6 therefore freezes proposal and selection, then studies adaptive held-out evidence under explicit false-revision and missed-revision costs; see [`V6_REPORT.md`](V6_REPORT.md).
 
 ## Artifacts
 

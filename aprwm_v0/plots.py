@@ -852,3 +852,153 @@ def plot_v5(output_dir: str | Path) -> None:
     figure.tight_layout()
     figure.savefig(root / "proposal_control.png", dpi=180)
     plt.close(figure)
+
+
+def plot_v6(output_dir: str | Path) -> None:
+    root = Path(output_dir)
+    rows = _read_csv(root / "strategies_aggregate.csv")
+    plt = _matplotlib()
+    labels = {
+        "always_accept": "Always accept",
+        "fixed8_raw": "Fixed-8 raw",
+        "fixed8_calibrated": "Fixed-8 calibrated",
+        "fixed16_calibrated": "Fixed-16 calibrated",
+        "fixed32_calibrated": "Fixed-32 calibrated",
+        "sequential_lcb": "Sequential LCB",
+        "sequential_bf": "Sequential BF",
+        "oracle_acceptance": "Acceptance oracle",
+    }
+    colors = {
+        "always_accept": "#999999",
+        "fixed8_raw": "#d55e00",
+        "fixed8_calibrated": "#e69f00",
+        "fixed16_calibrated": "#56b4e9",
+        "fixed32_calibrated": "#0072b2",
+        "sequential_lcb": "#009e73",
+        "sequential_bf": "#cc79a7",
+        "oracle_acceptance": "#000000",
+    }
+    index = {
+        (row["strategy"], float(row["noise"]), row["metric"]): float(row["mean"])
+        for row in rows
+    }
+    noises = sorted({float(row["noise"]) for row in rows})
+    strategies = (
+        "fixed8_raw",
+        "fixed8_calibrated",
+        "fixed16_calibrated",
+        "fixed32_calibrated",
+        "sequential_lcb",
+        "sequential_bf",
+        "oracle_acceptance",
+    )
+
+    figure, axes = plt.subplots(1, 2, figsize=(12, 4.4))
+    for strategy in strategies:
+        axes[0].plot(
+            noises,
+            [index[(strategy, noise, "acceptance_power_given_correct_selection")] for noise in noises],
+            marker="o",
+            color=colors[strategy],
+            label=labels[strategy],
+        )
+        axes[1].plot(
+            noises,
+            [index[(strategy, noise, "exact_operator_recovery")] for noise in noises],
+            marker="o",
+            color=colors[strategy],
+            label=labels[strategy],
+        )
+    axes[0].set_ylabel("Acceptance power | correct selection")
+    axes[1].set_ylabel("Exact operator recovery")
+    for axis in axes:
+        axis.set_xlabel("Observation-noise standard deviation")
+        axis.set_ylim(-0.03, 1.04)
+        axis.grid(alpha=0.25)
+    axes[1].legend(frameon=False, fontsize=8, bbox_to_anchor=(1.02, 1), loc="upper left")
+    figure.tight_layout()
+    figure.savefig(root / "validation_power.png", dpi=180, bbox_inches="tight")
+    plt.close(figure)
+
+    safety = (
+        "fixed8_raw",
+        "fixed8_calibrated",
+        "fixed32_calibrated",
+        "sequential_lcb",
+        "sequential_bf",
+    )
+    figure, axes = plt.subplots(1, 2, figsize=(11, 4.3))
+    for strategy in safety:
+        axes[0].plot(
+            noises,
+            [index[(strategy, noise, "false_revision_rate")] for noise in noises],
+            marker="o",
+            color=colors[strategy],
+            label=labels[strategy],
+        )
+        axes[1].plot(
+            noises,
+            [index[(strategy, noise, "outside_false_expansion")] for noise in noises],
+            marker="o",
+            color=colors[strategy],
+            label=labels[strategy],
+        )
+    axes[0].set_ylabel("False revision rate")
+    axes[1].set_ylabel("Outside-library false expansion")
+    for axis in axes:
+        axis.set_xlabel("Observation-noise standard deviation")
+        axis.set_ylim(bottom=-0.005)
+        axis.grid(alpha=0.25)
+    axes[1].legend(frameon=False, fontsize=8)
+    figure.tight_layout()
+    figure.savefig(root / "revision_safety.png", dpi=180)
+    plt.close(figure)
+
+    representative_noise = min(noises, key=lambda value: abs(value - 0.10))
+    frontier = (
+        "fixed8_calibrated",
+        "fixed16_calibrated",
+        "fixed32_calibrated",
+        "sequential_lcb",
+        "sequential_bf",
+    )
+    figure, axis = plt.subplots(figsize=(7, 4.8))
+    for strategy in frontier:
+        x = index[(strategy, representative_noise, "validation_samples")]
+        y = index[(strategy, representative_noise, "exact_operator_recovery")]
+        false = index[(strategy, representative_noise, "false_revision_rate")]
+        axis.scatter(x, y, s=70 + 1500 * false, color=colors[strategy])
+        axis.annotate(labels[strategy], (x, y), xytext=(5, 4), textcoords="offset points", fontsize=8)
+    axis.set_xlabel("Mean validation samples / episode")
+    axis.set_ylabel("Exact operator recovery")
+    axis.set_title(f"Validation-cost frontier at noise={representative_noise:g}")
+    axis.grid(alpha=0.25)
+    figure.tight_layout()
+    figure.savefig(root / "validation_cost_frontier.png", dpi=180)
+    plt.close(figure)
+
+    figure, axes = plt.subplots(1, 2, figsize=(10, 4.2))
+    for strategy in ("fixed8_raw", "fixed8_calibrated"):
+        axes[0].plot(
+            noises,
+            [index[(strategy, noise, "acceptance_power_given_correct_selection")] for noise in noises],
+            marker="o",
+            color=colors[strategy],
+            label=labels[strategy],
+        )
+        axes[1].plot(
+            noises,
+            [index[(strategy, noise, "false_revision_rate")] for noise in noises],
+            marker="o",
+            color=colors[strategy],
+            label=labels[strategy],
+        )
+    axes[0].set_ylabel("Acceptance power | correct selection")
+    axes[1].set_ylabel("False revision rate")
+    for axis in axes:
+        axis.set_xlabel("Observation-noise standard deviation")
+        axis.grid(alpha=0.25)
+        axis.legend(frameon=False)
+    figure.tight_layout()
+    figure.savefig(root / "noise_calibration.png", dpi=180)
+    plt.close(figure)

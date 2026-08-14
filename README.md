@@ -220,6 +220,19 @@ python -m aprwm_v0 v5 \
 
 噪声 `0.05` 下，posterior-weighted 两次 probe 相对 normalized 两次 probe 将 selection 提高 `4.29` 个百分点、exact recovery 提高 `3.72` 个百分点；第三次 probe 将 exact recovery 进一步提高到 `79.42%`。Sequential 版本把平均 probe 从 `2.212` 降至 `0.906`，但 exact recovery 降至 `71.07%`，因此是 evidence-cost Pareto 点而非无条件优胜。噪声 `0.10` 时 weighted-3 selection 仍有 `73.06%`，但正确选择后的 acceptance 只剩 `30.53%`，证明高噪声瓶颈已经转移到 validation power。LCB 没有降低本已接近零的 adequate false expansion，却进一步损失 recovery。完整受控条件、配对区间、open-set 分解与局限见 [V5_REPORT.md](V5_REPORT.md)。
 
+## V6 Adaptive Evidence Acquisition
+
+V6 冻结 V5 的 operator library、受控 candidate coverage 和 posterior-weighted 三 probe selector，只研究模型 revision 的验证阶段。Acceptance 同时检验新结构是否优于旧显式 physics、是否优于 selection runner-up，并从 observed MSE 中扣除已知 observation variance；residual 仅作为拒绝或等待期间的预测缓冲。
+
+```bash
+python -m aprwm_v0 v6 \
+  --output runs/v6/core \
+  --device cuda \
+  --seeds 401 411 421 431 441
+```
+
+V6 发现 V5 在 `σ=0.10` 的 acceptance collapse 部分来自固定 RMSE 阈值低于噪声地板。校准后，fixed-8 exact recovery 从 `3.20%` 恢复到 `28.42%`，但 false revision 同时升至 `3.41%`。双重 sequential BF-style 验证在全部噪声下的正式 mean false revision 均低于 `1%`；`σ=0.05` 时用 `16.17` 个平均 validation samples 达到 `45.20%` recovery，与 fixed-32 的 `44.99%` 无显著差异。`σ=0.10` 时它以 recovery 降至 `18.35%` 为代价，把 false revision 从 fixed-32 的 `1.66%` 降至 `0.47%`。这确立的是 validation cost、power 与 revision safety 的 Pareto 前沿，而非免费的 acceptance 提升。完整方法、配对统计和有效性边界见 [V6_REPORT.md](V6_REPORT.md)。
+
 ## 研究边界
 
-这是验证机制的受控 toy environment，不是最终具身系统。V1–V5 已逐步加入 unknown-physics posterior、主动辨识、开放集 revision、operator discovery 与 noisy discrimination，但仍未覆盖端到端视觉、长时闭环控制、真实机器人数据或能耗测量。V5 的结构恢复还条件于受控 trigger 与 candidate availability，不能解释为端到端高噪声 discovery 已解决。
+这是验证机制的受控 toy environment，不是最终具身系统。V1–V6 已逐步加入 unknown-physics posterior、主动辨识、开放集 revision、operator discovery、noisy discrimination 与 adaptive validation，但仍未覆盖端到端视觉、长时闭环控制、真实机器人数据或能耗测量。V5/V6 的结构恢复还条件于受控 trigger 与 candidate availability；V6 的 BF 是 plug-in surrogate，也不提供理论上的 anytime-valid false-revision 保证。
