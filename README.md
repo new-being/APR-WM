@@ -318,3 +318,43 @@ R0.5P 固定 `abs_v_v` operator，并在五个全新 seeds 上对称干预 `alph
 ## V6R0.6 Passivity-feasible + Utility-accepted Revision
 
 R0.6 将 acceptance 拆为物理可行性与预测效用两层：耗散算子在 `alpha<=0` 的结构保持空间中进行弱 posterior-regularized MAP 拟合，再用等权 H2/H4/H8 utility 决定是否持久化。在未使用过的 `7001–7041` seeds 上，native H16 从 no-revision 的 `0.32833` 降至 `0.23468`，accepted stability `100%`，接受率 `85%`，useful recall/precision 为 `93.68%/87.25%`；C0 false revision `0%`，C1 exact recovery `100%`。原始 short-rollout baseline 再次崩到 `0.99785`。全部预注册 gate 通过，因此轻量 SAPIEN realism gate 可以解除；但 utility 层并未优于 passivity-only (`0.23468` vs `0.23449`)，且 overdamping ratio 仍为 `1.98`。这使 RoboTwin task 实验变得合理，并不等于已经在 RoboTwin 成立。完整边界见 [V6R06_REPORT.md](V6R06_REPORT.md)。
+
+## R1-MS0/1 Drawer-only ManiSkill Preflight
+
+R1-MS 冻结 corrected R0.6，只改变 interaction distribution。第一步仅解锁
+`OpenCabinetDrawer-v1 + state_dict + Mode A`；Mode B、PushT、PegInsertion 和
+RGB 均受 ordered gate 阻挡。协议把 H2/H4/H8 固定为 acceptance horizon，H32
+只作不可见的 late-failure 评估，并把 validity 从 bool 升级为
+`modeled/boundary/unsupported` 三态。
+
+```bash
+/home/dong/miniconda3/envs/RoboTwin/bin/python -m aprwm_v0 r1-ms-preflight \
+  --output runs/r1_ms/preflight \
+  --python .venv-maniskill/bin/python \
+  --asset-root .maniskill
+```
+
+首次本机检查因未安装 ManiSkill/Drawer assets 而正确输出
+`mode_a_smoke_ready=false`、`formal_matrix_unlocked=false`，没有把协议实现冒充
+physics closure。实现边界、六道 gate、counterfactual 合同和安装状态见
+[R1_MS_PREFLIGHT_REPORT.md](R1_MS_PREFLIGHT_REPORT.md)。
+
+随后已在项目隔离环境中安装并核验 ManiSkill `3.0.1`、SAPIEN `3.0.3` 和
+Drawer 任务注册。当前剩余 blocker 是官方 `storage1.ucsd.edu` 资产端点在本机
+网络路径上持续 TLS 握手失败；Drawer assets 仍为 `0/25`，因此 Mode-A C0
+没有运行，也没有解锁任何后续 gate。
+
+25 项官方 `DataSource` 已逐项审计：它们均只有 UCSD HTTPS URL，且
+`hf_repo_id`、`github_url`、published checksum 全为空，所以当前版本没有可用的
+官方替代源。下载器支持 `--audit-only`，拒绝非 HTTPS/自定义镜像，并明确区分
+本地 tree hash 与官方 archive authenticity。资产到位后的 C0 已预固定为
+`1000/1040/1082 × seeds 8101/8111/8121`；每个 asset 必须单独闭合后才允许聚合。
+
+阻塞期间已完成不具 scientific gate 权限的 `PickCube-v1` I/O smoke：三 seed
+快照恢复最大误差 `1.49e-8`，重复 replay 误差为 `0`，反事实分支真实分离，HDF5
+往返误差为 `0`。输出明确记录 `can_unlock_drawer_gate=false`；运行命令为：
+
+```bash
+MS_ASSET_DIR=.maniskill .venv-maniskill/bin/python -m aprwm_v0 \
+  r1-ms-io-smoke --output runs/r1_ms/io_smoke
+```

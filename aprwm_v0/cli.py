@@ -37,6 +37,7 @@ from .r05 import V6R05Config, run_v6r05
 from .r05p import V6R05PConfig, run_v6r05p
 from .r06 import V6R06Config, run_v6r06
 from .r1_ms import run_preflight as run_r1_ms_preflight
+from .r1_ms_io import R1MSIOConfig, run_r1_ms_io_smoke
 
 
 def apply_overrides(config: ExperimentConfig, args: argparse.Namespace) -> ExperimentConfig:
@@ -375,6 +376,15 @@ def build_parser() -> argparse.ArgumentParser:
         "--asset-root", default=".maniskill"
     )
 
+    r1_ms_io_parser = subparsers.add_parser(
+        "r1-ms-io-smoke",
+        help="Run asset-free state replay/branching plumbing without gate authority",
+    )
+    r1_ms_io_parser.add_argument("--output", default="runs/r1_ms/io_smoke")
+    r1_ms_io_parser.add_argument(
+        "--seeds", nargs="+", type=int, default=[8201, 8211, 8221]
+    )
+
     eval_parser = subparsers.add_parser("evaluate", help="Evaluate a saved checkpoint")
     eval_parser.add_argument("--checkpoint", required=True)
     eval_parser.add_argument("--device", default="auto")
@@ -666,6 +676,12 @@ def main(argv: list[str] | None = None) -> None:
     if args.command == "r1-ms-preflight":
         result = run_r1_ms_preflight(
             args.output, python=args.python, asset_root=args.asset_root
+        )
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return
+    if args.command == "r1-ms-io-smoke":
+        result = run_r1_ms_io_smoke(
+            args.output, config=R1MSIOConfig(seeds=tuple(args.seeds))
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return

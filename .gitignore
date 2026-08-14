@@ -1,7 +1,9 @@
 .venv/
+.venv-maniskill/
+.maniskill/
+.cache/
 __pycache__/
 *.py[cod]
 .pytest_cache/
 runs/
 *.egg-info/
-
