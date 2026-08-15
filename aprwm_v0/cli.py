@@ -36,8 +36,6 @@ from .r04b import V6R04BConfig, run_v6r04b
 from .r05 import V6R05Config, run_v6r05
 from .r05p import V6R05PConfig, run_v6r05p
 from .r06 import V6R06Config, run_v6r06
-from .r1_ms import run_preflight as run_r1_ms_preflight
-from .r1_ms_io import R1MSIOConfig, run_r1_ms_io_smoke
 
 
 def apply_overrides(config: ExperimentConfig, args: argparse.Namespace) -> ExperimentConfig:
@@ -364,25 +362,150 @@ def build_parser() -> argparse.ArgumentParser:
     )
     r06_parser.add_argument("--episodes", type=int, default=24)
 
-    r1_ms_parser = subparsers.add_parser(
-        "r1-ms-preflight",
-        help="Freeze and inspect the Drawer-only ManiSkill R1-MS0 protocol",
+    r1_mj0_parser = subparsers.add_parser(
+        "r1-mj0",
+        help="Run R1-MJ0 native MuJoCo single-hinge force-space closure",
     )
-    r1_ms_parser.add_argument("--output", default="runs/r1_ms/preflight")
-    r1_ms_parser.add_argument(
-        "--python", default=".venv-maniskill/bin/python"
+    r1_mj0_parser.add_argument("--output", default="runs/r1_mj0/closure")
+    r1_mj0_parser.add_argument("--duration", type=float, default=10.0)
+
+    r1_rs0_parser = subparsers.add_parser(
+        "r1-rs0",
+        help="Run R1-RS0 robosuite Door Mode-A C0 (requires passing MJ0)",
     )
-    r1_ms_parser.add_argument(
-        "--asset-root", default=".maniskill"
+    r1_rs0_parser.add_argument("--output", default="runs/r1_rs0/c0")
+    r1_rs0_parser.add_argument(
+        "--mj0-summary",
+        default="runs/r1_mj0/closure/summary.json",
+        help="Path to MJ0 summary.json; RS0 stays locked unless mj0_passed",
+    )
+    r1_rs0_parser.add_argument("--duration", type=float, default=10.0)
+
+    r1_rs1_parser = subparsers.add_parser(
+        "r1-rs1",
+        help="Run R1-RS1 frozen R0.6 Door Mode-A scientific transfer",
+    )
+    r1_rs1_parser.add_argument("--output", default="runs/r1_rs1/formal")
+    r1_rs1_parser.add_argument(
+        "--rs0-summary",
+        default="runs/r1_rs0/c0/summary.json",
+        help="Path to RS0 summary.json; RS1 stays locked unless rs0_passed",
+    )
+    r1_rs1_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (seed 8901 x 5 regimes x P1); no scientific gates",
     )
 
-    r1_ms_io_parser = subparsers.add_parser(
-        "r1-ms-io-smoke",
-        help="Run asset-free state replay/branching plumbing without gate authority",
+    r1_rs1a_parser = subparsers.add_parser(
+        "r1-rs1a",
+        help="Run R1-RS1A multi-evidence inadequacy detection (trigger-only)",
     )
-    r1_ms_io_parser.add_argument("--output", default="runs/r1_ms/io_smoke")
-    r1_ms_io_parser.add_argument(
-        "--seeds", nargs="+", type=int, default=[8201, 8211, 8221]
+    r1_rs1a_parser.add_argument("--output", default="runs/r1_rs1a/formal")
+    r1_rs1a_parser.add_argument(
+        "--rs0-summary",
+        default="runs/r1_rs0/c0/summary.json",
+        help="Path to RS0 summary.json",
+    )
+    r1_rs1a_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (seed 8951 x 5 regimes x P1); no ROC gates",
+    )
+
+    r1_rs1a1_parser = subparsers.add_parser(
+        "r1-rs1a1",
+        help="Run R1-RS1A.1 compositional inadequacy evidence (D3'/Dg)",
+    )
+    r1_rs1a1_parser.add_argument("--output", default="runs/r1_rs1a1/formal")
+    r1_rs1a1_parser.add_argument(
+        "--rs0-summary",
+        default="runs/r1_rs0/c0/summary.json",
+    )
+    r1_rs1a1_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (seed 8961 x 5 x P1)",
+    )
+
+    r1_rs1a2_parser = subparsers.add_parser(
+        "r1-rs1a2",
+        help="Run R1-RS1A.2 weak structural signal detection",
+    )
+    r1_rs1a2_parser.add_argument("--output", default="runs/r1_rs1a2/formal")
+    r1_rs1a2_parser.add_argument(
+        "--rs0-summary",
+        default="runs/r1_rs0/c0/summary.json",
+    )
+    r1_rs1a2_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (seed 8971 x 5 x P1)",
+    )
+
+    r1_rs1a3_parser = subparsers.add_parser(
+        "r1-rs1a3",
+        help="Run R1-RS1A.3 excitation-limited identifiability",
+    )
+    r1_rs1a3_parser.add_argument("--output", default="runs/r1_rs1a3/formal")
+    r1_rs1a3_parser.add_argument(
+        "--rs0-summary",
+        default="runs/r1_rs0/c0/summary.json",
+    )
+    r1_rs1a3_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (seed 8981 x C0/C1-L x A0,f=0.4)",
+    )
+
+    r1_rs1a4_parser = subparsers.add_parser(
+        "r1-rs1a4",
+        help="Run R1-RS1A.4 detectability vs consequence",
+    )
+    r1_rs1a4_parser.add_argument("--output", default="runs/r1_rs1a4/formal")
+    r1_rs1a4_parser.add_argument(
+        "--rs0-summary",
+        default="runs/r1_rs0/c0/summary.json",
+    )
+    r1_rs1a4_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (seed 8991 x alpha in {0,-0.12} x A0)",
+    )
+
+    r1_rs1a5_parser = subparsers.add_parser(
+        "r1-rs1a5",
+        help="Run R1-RS1A.5 value-of-epistemic-excitation (probe population)",
+    )
+    r1_rs1a5_parser.add_argument("--output", default="runs/r1_rs1a5/formal")
+    r1_rs1a5_parser.add_argument(
+        "--rs0-summary",
+        default="runs/r1_rs0/c0/summary.json",
+    )
+    r1_rs1a5_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (seed 9001)",
+    )
+
+    r1_rs1b_parser = subparsers.add_parser(
+        "r1-rs1b",
+        help="Run long-horizon admissibility on revise-worthy Door revisions",
+    )
+    r1_rs1b_parser.add_argument("--output", default="runs/r1_rs1b/formal")
+    r1_rs1b_parser.add_argument(
+        "--rs0-summary",
+        default="runs/r1_rs0/c0/summary.json",
+    )
+    r1_rs1b_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+        help="Passing RS1A.5 summary containing the frozen intake policy",
+    )
+    r1_rs1b_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (seed 9011 x alpha=-0.24 x 1.5A0)",
     )
 
     eval_parser = subparsers.add_parser("evaluate", help="Evaluate a saved checkpoint")
@@ -673,15 +796,109 @@ def main(argv: list[str] | None = None) -> None:
         plot_v6r06(args.output)
         print(json.dumps(result, indent=2))
         return
-    if args.command == "r1-ms-preflight":
-        result = run_r1_ms_preflight(
-            args.output, python=args.python, asset_root=args.asset_root
+    if args.command == "r1-mj0":
+        from .r1_mj import R1MJ0Config, run_r1_mj0
+
+        result = run_r1_mj0(
+            args.output,
+            config=R1MJ0Config(duration_s=args.duration),
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return
-    if args.command == "r1-ms-io-smoke":
-        result = run_r1_ms_io_smoke(
-            args.output, config=R1MSIOConfig(seeds=tuple(args.seeds))
+    if args.command == "r1-rs1":
+        from .r1_rs1 import R1RS1Config, run_r1_rs1
+
+        result = run_r1_rs1(
+            args.output,
+            rs0_summary=args.rs0_summary,
+            config=R1RS1Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs1a":
+        from .r1_rs1a import R1RS1AConfig, run_r1_rs1a
+
+        result = run_r1_rs1a(
+            args.output,
+            rs0_summary=args.rs0_summary,
+            config=R1RS1AConfig(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs1a1":
+        from .r1_rs1a1 import R1RS1A1Config, run_r1_rs1a1
+
+        result = run_r1_rs1a1(
+            args.output,
+            rs0_summary=args.rs0_summary,
+            config=R1RS1A1Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs1a2":
+        from .r1_rs1a2 import R1RS1A2Config, run_r1_rs1a2
+
+        result = run_r1_rs1a2(
+            args.output,
+            rs0_summary=args.rs0_summary,
+            config=R1RS1A2Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs1a3":
+        from .r1_rs1a3 import R1RS1A3Config, run_r1_rs1a3
+
+        result = run_r1_rs1a3(
+            args.output,
+            rs0_summary=args.rs0_summary,
+            config=R1RS1A3Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs1b":
+        from .r1_rs1b import R1RS1BConfig, run_r1_rs1b
+
+        result = run_r1_rs1b(
+            args.output,
+            rs0_summary=args.rs0_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R1RS1BConfig(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs1a4":
+        from .r1_rs1a4 import run_r1_rs1a4
+
+        result = run_r1_rs1a4(
+            args.output,
+            rs0_summary=args.rs0_summary,
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs1a5":
+        from .r1_rs1a5 import run_r1_rs1a5
+
+        result = run_r1_rs1a5(
+            args.output,
+            rs0_summary=args.rs0_summary,
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs0":
+        from .r1_rs import R1RS0Config, run_r1_rs0
+
+        result = run_r1_rs0(
+            args.output,
+            mj0_summary=args.mj0_summary,
+            config=R1RS0Config(duration_s=args.duration),
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return

@@ -1,9 +1,10 @@
 .venv/
-.venv-maniskill/
-.maniskill/
+.venv-robosuite/
 .cache/
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.ipynb_checkpoints/
 runs/
+logs/
 *.egg-info/
