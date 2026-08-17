@@ -46,7 +46,7 @@ REGIMES = ("C0", "C1-L", "C1-H", "CNEG", "C2-latch")
 FORMAL_SEEDS = (9101, 9111, 9121, 9131, 9141)
 SMOKE_SEED = 8901
 PROBES = ("P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8")
-PREREG_PATH = "REPORT/R1_RS1_PREREG.md"
+PREREG_PATH = "REPORT/REG/R1/R1_RS1_PREREG.md"
 
 
 @dataclass(frozen=True)

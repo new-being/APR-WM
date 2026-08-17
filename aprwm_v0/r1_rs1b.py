@@ -30,7 +30,7 @@ from .v06 import _write_csv, _write_json
 from .v4 import OPERATOR_NAMES
 
 
-PREREG_PATH = "REPORT/R1_RS1B_PREREG.md"
+PREREG_PATH = "REPORT/REG/R1/R1_RS1B_PREREG.md"
 FORMAL_SEEDS = (9901, 9911, 9921, 9931, 9941)
 SMOKE_SEED = 9011
 ALPHAS = (-0.12, -0.18, -0.24)

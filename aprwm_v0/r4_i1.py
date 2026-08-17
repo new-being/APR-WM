@@ -19,7 +19,7 @@ from .r4_i0 import D_TAXEL_MIN, R4I0Config, d_taxel, mechanics_matched, simulate
 from .v06 import _write_json
 
 
-PREREG_PATH = "REPORT/REG/R4_I1_PREREG.md"
+PREREG_PATH = "REPORT/REG/R4/R4_I1_PREREG.md"
 AUROC_LEAK_FAIL = 0.95
 AUROC_PASS_MAX = 0.90
 GAIN_MIN = 0.10

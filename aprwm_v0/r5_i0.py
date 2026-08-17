@@ -30,7 +30,7 @@ from .r4_i1 import HS_KEYS, _hs
 from .v06 import _write_json
 
 
-PREREG_PATH = "REPORT/REG/R5_I0_PREREG.md"
+PREREG_PATH = "REPORT/REG/R5/R5_I0_PREREG.md"
 SOLREF_UNI = "0.022 1"
 LAMBDAS = (0.0, 0.04, 0.08, 0.12, 0.16, 0.20, 0.24)
 LAMBDAS_V2 = (0.0, 0.15, 0.30, 0.45, 0.60, 0.75, 0.90)

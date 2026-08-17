@@ -42,7 +42,7 @@ from .train import resolve_device, seed_everything
 from .v06 import _write_csv, _write_json
 
 
-PREREG_PATH = "REPORT/REG/R1_RS1B1_PREREG.md"
+PREREG_PATH = "REPORT/REG/R1/R1_RS1B1_PREREG.md"
 FORMAL_SEEDS = (9951, 9961, 9971, 9981, 9991)
 SMOKE_SEED = 9021
 REGION_MIN_QUERIES = 3

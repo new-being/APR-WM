@@ -27,7 +27,7 @@ from .train import seed_everything
 from .v06 import _write_json
 
 
-PREREG_PATH = "REPORT/REG/R4_C0_PREREG.md"
+PREREG_PATH = "REPORT/REG/R4/R4_C0_PREREG.md"
 EPS_INFO = 0.005
 REL_EVID_MIN = 1.0e-4
 HIDDEN = 32

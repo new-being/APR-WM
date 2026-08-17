@@ -16,7 +16,7 @@ from .r5_i0_selfstress import LAMBDAS, simulate_selfstress
 from .v06 import _write_json
 
 
-PREREG_PATH = "REPORT/REG/R5_I1_SELFSTRESS_PREREG.md"
+PREREG_PATH = "REPORT/REG/R5/R5_I1_SELFSTRESS_PREREG.md"
 TRAIN_LAM = (0.0, 4.0, 8.0, 12.0)
 HELD_LAM = (2.0, 6.0, 10.0)
 Y_IDX = (0, 1, 2, 4)

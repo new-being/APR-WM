@@ -31,7 +31,7 @@ from .train import resolve_device, seed_everything
 from .v06 import _write_csv, _write_json
 
 
-PREREG_PATH = "REPORT/REG/R1_RS1C_PREREG.md"
+PREREG_PATH = "REPORT/REG/R1/R1_RS1C_PREREG.md"
 FORMAL_SEEDS = (10101, 10111, 10121, 10131, 10141)
 SMOKE_SEED = 9041
 ALPHAS = (0.0, -0.09, -0.12, -0.18, -0.24)

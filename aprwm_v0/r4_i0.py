@@ -20,7 +20,7 @@ from .r1_rs3a import _jsonable
 from .v06 import _write_json
 
 
-PREREG_PATH = "REPORT/REG/R4_I0_PREREG.md"
+PREREG_PATH = "REPORT/REG/R4/R4_I0_PREREG.md"
 TAXEL_N = 4
 PAD = 0.036
 BLOCK_HALF_Y = 0.012

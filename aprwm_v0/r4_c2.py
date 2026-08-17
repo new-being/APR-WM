@@ -20,7 +20,7 @@ from .r4_c1 import _collect
 from .v06 import _write_json
 
 
-PREREG_PATH = "REPORT/REG/R4_C2_PREREG.md"
+PREREG_PATH = "REPORT/REG/R4/R4_C2_PREREG.md"
 DELTA_MIN = 0.05
 RIDGE = 1.0e-3
 STD_C_MIN = 1.0e-6

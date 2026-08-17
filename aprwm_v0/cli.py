@@ -1061,6 +1061,258 @@ def build_parser() -> argparse.ArgumentParser:
         default="runs/r5_i1_selfstress/formal/summary.json",
     )
 
+    r5_d0_parser = subparsers.add_parser(
+        "r5-d0",
+        help="R5-D0 executed regret: h^S planner vs (h^S, X) world-model planner",
+    )
+    r5_d0_parser.add_argument("--output", default="runs/r5_d0/formal")
+    r5_d0_parser.add_argument(
+        "--preflight-summary",
+        default="runs/r5_d0_preflight/formal/summary.json",
+    )
+
+    r6_a0_parser = subparsers.add_parser(
+        "r6-a0",
+        help="R6-A0 frozen D0 action-margin / cost-error audit (no training)",
+    )
+    r6_a0_parser.add_argument("--output", default="runs/r6_a0/formal")
+    r6_a0_parser.add_argument(
+        "--d0-summary",
+        default="runs/r5_d0/formal/summary.json",
+    )
+
+    r6_a1_parser = subparsers.add_parser(
+        "r6-a1",
+        help="R6-A1 nested-LOO pairwise J-margin uncertainty audit (no planner)",
+    )
+    r6_a1_parser.add_argument("--output", default="runs/r6_a1/formal")
+    r6_a1_parser.add_argument(
+        "--a0-summary",
+        default="runs/r6_a0/formal/summary.json",
+    )
+    r6_a1_parser.add_argument(
+        "--d0-summary",
+        default="runs/r5_d0/formal/summary.json",
+    )
+
+    r6_b0_parser = subparsers.add_parser(
+        "r6-b0",
+        help="R6-B0 frozen PX-vs-pi0 abstention (algebraic; no new rollouts)",
+    )
+    r6_b0_parser.add_argument("--output", default="runs/r6_b0/formal")
+    r6_b0_parser.add_argument(
+        "--a1-summary",
+        default="runs/r6_a1/formal/summary.json",
+    )
+    r6_b0_parser.add_argument(
+        "--d0-summary",
+        default="runs/r5_d0/formal/summary.json",
+    )
+
+    r7_p0_parser = subparsers.add_parser(
+        "r7-p0",
+        help="R7-P0 fresh actuator-effectiveness switchability preflight (no certificate)",
+    )
+    r7_p0_parser.add_argument("--output", default="runs/r7_p0/formal")
+    r7_p0_parser.add_argument(
+        "--b0-summary",
+        default="runs/r6_b0/formal/summary.json",
+    )
+
+    r7_a0_parser = subparsers.add_parser(
+        "r7-a0",
+        help="R7-A0 one-sided split-conformal switch certificate (fresh alpha)",
+    )
+    r7_a0_parser.add_argument("--output", default="runs/r7_a0/formal")
+    r7_a0_parser.add_argument(
+        "--p0-summary",
+        default="runs/r7_p0/formal/summary.json",
+    )
+
+    r7_p1_parser = subparsers.add_parser(
+        "r7-p1",
+        help="R7-P1 saturated-actuator misspecification preflight (no certificate)",
+    )
+    r7_p1_parser.add_argument("--output", default="runs/r7_p1/formal")
+    r7_p1_parser.add_argument(
+        "--a0-summary",
+        default="runs/r7_a0/formal/summary.json",
+    )
+
+    r7_a1_parser = subparsers.add_parser(
+        "r7-a1",
+        help="R7-A1 frozen conformal certificate on saturated actuator family",
+    )
+    r7_a1_parser.add_argument("--output", default="runs/r7_a1/formal")
+    r7_a1_parser.add_argument(
+        "--p1-summary",
+        default="runs/r7_p1/formal/summary.json",
+    )
+
+    r7_a2_parser = subparsers.add_parser(
+        "r7-a2",
+        help="R7-A2 recall recovery with frozen certificate and one spline",
+    )
+    r7_a2_parser.add_argument("--output", default="runs/r7_a2/formal")
+    r7_a2_parser.add_argument(
+        "--a1-summary",
+        default="runs/r7_a1/formal/summary.json",
+    )
+
+    r7_b0_parser = subparsers.add_parser(
+        "r7-b0",
+        help="R7-B0 world-model-mediated switch certificate",
+    )
+    r7_b0_parser.add_argument("--output", default="runs/r7_b0/formal")
+    r7_b0_parser.add_argument(
+        "--a2-summary",
+        default="runs/r7_a2/formal/summary.json",
+    )
+
+    r7_b1_parser = subparsers.add_parser(
+        "r7-b1",
+        help="R7-B1 frozen B0 certificate under F_max dynamics shift",
+    )
+    r7_b1_parser.add_argument("--output", default="runs/r7_b1/formal")
+    r7_b1_parser.add_argument(
+        "--b0-summary",
+        default="runs/r7_b0/formal/summary.json",
+    )
+
+    r8_p0_parser = subparsers.add_parser(
+        "r8-p0",
+        help="R8-P0 active certificate-validity feasibility (no detector)",
+    )
+    r8_p0_parser.add_argument("--output", default="runs/r8_p0/formal")
+    r8_p0_parser.add_argument(
+        "--b1-summary",
+        default="runs/r7_b1/formal/summary.json",
+    )
+    r8_p0_parser.add_argument(
+        "--b0-summary",
+        default="runs/r7_b0/formal/summary.json",
+    )
+
+    r8_p1_parser = subparsers.add_parser(
+        "r8-p1",
+        help="R8-P1 state-neutral four-phase validity probe",
+    )
+    r8_p1_parser.add_argument("--output", default="runs/r8_p1/formal")
+    r8_p1_parser.add_argument(
+        "--p0-summary",
+        default="runs/r8_p0/formal/summary.json",
+    )
+    r8_p1_parser.add_argument(
+        "--b0-summary",
+        default="runs/r7_b0/formal/summary.json",
+    )
+
+    r8_p2_parser = subparsers.add_parser(
+        "r8-p2",
+        help="R8-P2 damping-aware three-phase validity probe",
+    )
+    r8_p2_parser.add_argument("--output", default="runs/r8_p2/formal")
+    r8_p2_parser.add_argument(
+        "--p1-summary",
+        default="runs/r8_p1/formal/summary.json",
+    )
+    r8_p2_parser.add_argument(
+        "--b0-summary",
+        default="runs/r7_b0/formal/summary.json",
+    )
+
+    r8_r0_parser = subparsers.add_parser(
+        "r8-r0",
+        help="R8-R0 billed P0 probe then task-independent reset",
+    )
+    r8_r0_parser.add_argument("--output", default="runs/r8_r0/formal")
+    r8_r0_parser.add_argument(
+        "--p2-summary",
+        default="runs/r8_p2/formal/summary.json",
+    )
+    r8_r0_parser.add_argument(
+        "--b0-summary",
+        default="runs/r7_b0/formal/summary.json",
+    )
+
+    r9_p0_parser = subparsers.add_parser(
+        "r9-p0",
+        help="R9-P0 amortized validity-acquisition feasibility",
+    )
+    r9_p0_parser.add_argument("--output", default="runs/r9_p0/formal")
+    r9_p0_parser.add_argument(
+        "--r0-summary",
+        default="runs/r8_r0/formal/summary.json",
+    )
+    r9_p0_parser.add_argument(
+        "--b0-summary",
+        default="runs/r7_b0/formal/summary.json",
+    )
+
+    r9_a0_parser = subparsers.add_parser(
+        "r9-a0",
+        help="R9-A0 persistent certificate-validity belief",
+    )
+    r9_a0_parser.add_argument("--output", default="runs/r9_a0/formal")
+    r9_a0_parser.add_argument(
+        "--p0-summary",
+        default="runs/r9_p0/formal/summary.json",
+    )
+    r9_a0_parser.add_argument(
+        "--b0-summary",
+        default="runs/r7_b0/formal/summary.json",
+    )
+
+    r9_b0_parser = subparsers.add_parser(
+        "r9-b0",
+        help="R9-B0 passive unidirectional validity-license revocation",
+    )
+    r9_b0_parser.add_argument("--output", default="runs/r9_b0/formal")
+    r9_b0_parser.add_argument(
+        "--a0-summary",
+        default="runs/r9_a0/formal/summary.json",
+    )
+    r9_b0_parser.add_argument(
+        "--p0-summary",
+        default="runs/r9_p0/formal/summary.json",
+    )
+    r9_b0_parser.add_argument(
+        "--b0-summary",
+        default="runs/r7_b0/formal/summary.json",
+    )
+
+    r9_b1_p0_parser = subparsers.add_parser(
+        "r9-b1-p0",
+        help="R9-B1-P0 periodic active revalidation feasibility",
+    )
+    r9_b1_p0_parser.add_argument("--output", default="runs/r9_b1_p0/formal")
+    r9_b1_p0_parser.add_argument(
+        "--b0-r9-summary",
+        default="runs/r9_b0/formal/summary.json",
+    )
+    r9_b1_p0_parser.add_argument(
+        "--a0-summary",
+        default="runs/r9_a0/formal/summary.json",
+    )
+    r9_b1_p0_parser.add_argument(
+        "--p0-summary",
+        default="runs/r9_p0/formal/summary.json",
+    )
+    r9_b1_p0_parser.add_argument(
+        "--b0-summary",
+        default="runs/r7_b0/formal/summary.json",
+    )
+
+    r10_c0_parser = subparsers.add_parser(
+        "r10-c0",
+        help="R10-C0 real sensor-chain C0 (locked without hardware log)",
+    )
+    r10_c0_parser.add_argument("--output", default="runs/r10_c0/formal")
+    r10_c0_parser.add_argument(
+        "--residual-log",
+        default="runs/r10_c0/real/residual.h5",
+    )
+
     eval_parser = subparsers.add_parser("evaluate", help="Evaluate a saved checkpoint")
     eval_parser.add_argument("--checkpoint", required=True)
     eval_parser.add_argument("--device", default="auto")
@@ -1768,6 +2020,169 @@ def main(argv: list[str] | None = None) -> None:
         from .r5_d0_preflight import run_r5_d0_preflight
 
         result = run_r5_d0_preflight(args.output, i1_summary=args.i1_summary)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r5-d0":
+        from .r5_d0 import run_r5_d0
+
+        result = run_r5_d0(args.output, preflight_summary=args.preflight_summary)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r6-a0":
+        from .r6_a0 import run_r6_a0
+
+        result = run_r6_a0(args.output, d0_summary=args.d0_summary)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r6-a1":
+        from .r6_a1 import run_r6_a1
+
+        result = run_r6_a1(
+            args.output,
+            a0_summary=args.a0_summary,
+            d0_summary=args.d0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r6-b0":
+        from .r6_b0 import run_r6_b0
+
+        result = run_r6_b0(
+            args.output,
+            a1_summary=args.a1_summary,
+            d0_summary=args.d0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r7-p0":
+        from .r7_p0 import run_r7_p0
+
+        result = run_r7_p0(args.output, b0_summary=args.b0_summary)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r7-a0":
+        from .r7_a0 import run_r7_a0
+
+        result = run_r7_a0(args.output, p0_summary=args.p0_summary)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r7-p1":
+        from .r7_p1 import run_r7_p1
+
+        result = run_r7_p1(args.output, a0_summary=args.a0_summary)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r7-a1":
+        from .r7_a1 import run_r7_a1
+
+        result = run_r7_a1(args.output, p1_summary=args.p1_summary)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r7-a2":
+        from .r7_a2 import run_r7_a2
+
+        result = run_r7_a2(args.output, a1_summary=args.a1_summary)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r7-b0":
+        from .r7_b0 import run_r7_b0
+
+        result = run_r7_b0(args.output, a2_summary=args.a2_summary)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r7-b1":
+        from .r7_b1 import run_r7_b1
+
+        result = run_r7_b1(args.output, b0_summary=args.b0_summary)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r8-p0":
+        from .r8_p0 import run_r8_p0
+
+        result = run_r8_p0(
+            args.output,
+            b1_summary=args.b1_summary,
+            b0_summary=args.b0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r8-p1":
+        from .r8_p1 import run_r8_p1
+
+        result = run_r8_p1(
+            args.output,
+            p0_summary=args.p0_summary,
+            b0_summary=args.b0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r8-p2":
+        from .r8_p2 import run_r8_p2
+
+        result = run_r8_p2(
+            args.output,
+            p1_summary=args.p1_summary,
+            b0_summary=args.b0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r8-r0":
+        from .r8_r0 import run_r8_r0
+
+        result = run_r8_r0(
+            args.output,
+            p2_summary=args.p2_summary,
+            b0_summary=args.b0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r9-p0":
+        from .r9_p0 import run_r9_p0
+
+        result = run_r9_p0(
+            args.output,
+            r0_summary=args.r0_summary,
+            b0_summary=args.b0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r9-a0":
+        from .r9_a0 import run_r9_a0
+
+        result = run_r9_a0(
+            args.output,
+            p0_summary=args.p0_summary,
+            b0_summary=args.b0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r9-b0":
+        from .r9_b0 import run_r9_b0
+
+        result = run_r9_b0(
+            args.output,
+            a0_summary=args.a0_summary,
+            p0_summary=args.p0_summary,
+            b0_summary=args.b0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r9-b1-p0":
+        from .r9_b1_p0 import run_r9_b1_p0
+
+        result = run_r9_b1_p0(
+            args.output,
+            b0_r9_summary=args.b0_r9_summary,
+            a0_summary=args.a0_summary,
+            p0_summary=args.p0_summary,
+            b0_summary=args.b0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r10-c0":
+        from .r10_c0 import run_r10_c0
+
+        result = run_r10_c0(args.output, residual_log=args.residual_log)
         print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
         return
     if args.command == "r1-rs1a4":

@@ -23,7 +23,7 @@ from .v3 import tangent_decomposition
 from .v5 import V5Config, _fit_base_posterior
 
 
-PREREG_PATH = "REPORT/R1_RS1A4_PREREG.md"
+PREREG_PATH = "REPORT/REG/R1/R1_RS1A4_PREREG.md"
 FORMAL_SEEDS = (9701, 9711, 9721, 9731, 9741)
 SMOKE_SEED = 8991
 A0 = 0.12

@@ -16,7 +16,7 @@ from .r5_i0 import relative_l2
 from .v06 import _write_json
 
 
-PREREG_PATH = "REPORT/REG/R5_I0_SELFSTRESS_PREREG.md"
+PREREG_PATH = "REPORT/REG/R5/R5_I0_SELFSTRESS_PREREG.md"
 DT = 0.002
 HOLD_S = 0.30
 PROBE_S = 0.40

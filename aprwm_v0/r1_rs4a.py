@@ -26,7 +26,7 @@ from .train import seed_everything
 from .v06 import _write_csv, _write_json
 
 
-PREREG_PATH = "REPORT/REG/R1_RS4A_PREREG.md"
+PREREG_PATH = "REPORT/REG/R1/R1_RS4A_PREREG.md"
 SEEDS = (14101, 14111, 14121, 14131, 14141)
 REGIMES = ("C0", "C1-L", "C1-H")
 MODE_A_AMPS = (1.0, 1.5)

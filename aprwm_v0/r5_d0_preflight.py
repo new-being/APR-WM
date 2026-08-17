@@ -15,7 +15,7 @@ from .r5_i0_selfstress import LAMBDAS, simulate_selfstress
 from .v06 import _write_json
 
 
-PREREG_PATH = "REPORT/REG/R5_D0_PREFLIGHT_PREREG.md"
+PREREG_PATH = "REPORT/REG/R5/R5_D0_PREFLIGHT_PREREG.md"
 ACTIONS = (("cons", 0.4), ("mid", 1.0), ("agg", 2.5))
 Y_STAR = 0.010
 BETA_U = 1.0e-5
@@ -42,15 +42,20 @@ def _require_i1(path: Path) -> dict[str, Any]:
     return payload
 
 
-def task_loss(trace: dict[str, Any]) -> float:
-    y = np.asarray(trace["y_future"], dtype=np.float64)
+def task_loss_y(y_future: np.ndarray, *, q_end: float | None = None) -> float:
+    y = np.asarray(y_future, dtype=np.float64)
     q = y[:, 0]
     u = y[:, 3]
-    pos = float((float(trace["q_end"]) - Y_STAR) ** 2)
+    end = float(q[-1] if q_end is None else q_end)
+    pos = (end - Y_STAR) ** 2
     effort = BETA_U * float(np.mean(u**2))
     excess = np.maximum(np.abs(q) - Q_LIM, 0.0)
     limit = BETA_LIM * float(np.mean(excess**2))
-    return pos + effort + limit
+    return float(pos + effort + limit)
+
+
+def task_loss(trace: dict[str, Any]) -> float:
+    return task_loss_y(trace["y_future"], q_end=float(trace["q_end"]))
 
 
 def _argmin_unique(js: np.ndarray) -> str | None:

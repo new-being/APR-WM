@@ -29,7 +29,7 @@ from .r4_i1 import (
 from .v06 import _write_json
 
 
-PREREG_PATH = "REPORT/REG/R4_C1_PREREG.md"
+PREREG_PATH = "REPORT/REG/R4/R4_C1_PREREG.md"
 FT_PROBE = 4.8
 PROBE_S = 0.40
 C_MIN = 1.0e-3

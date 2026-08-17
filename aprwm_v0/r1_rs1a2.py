@@ -42,7 +42,7 @@ from .v4 import OPERATOR_NAMES, operator_library
 from .v5 import V5Config, _fit_base_posterior
 
 
-PREREG_PATH = "REPORT/R1_RS1A2_PREREG.md"
+PREREG_PATH = "REPORT/REG/R1/R1_RS1A2_PREREG.md"
 FORMAL_SEEDS = (9501, 9511, 9521, 9531, 9541)
 SMOKE_SEED = 8971
 RESIDUAL_DETECTORS = ("D0", "D_SNR", "D_dir", "D_corr", "D_lib")

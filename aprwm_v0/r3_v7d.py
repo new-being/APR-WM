@@ -29,7 +29,7 @@ from .train import seed_everything
 from .v06 import _write_csv, _write_json
 
 
-PREREG_PATH = "REPORT/REG/R3_V7D_PREREG.md"
+PREREG_PATH = "REPORT/REG/R3/R3_V7D_PREREG.md"
 SEEDS = (27101, 27111, 27121, 27131, 27141)
 TRAIN_SEEDS = SEEDS[:2]
 VAL_SEED = SEEDS[2]

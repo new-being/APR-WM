@@ -26,7 +26,7 @@ from .train import seed_everything
 from .v06 import _write_csv, _write_json
 
 
-PREREG_PATH = "REPORT/REG/R1_RS2B_PREREG.md"
+PREREG_PATH = "REPORT/REG/R1/R1_RS2B_PREREG.md"
 REGIMES = ("C0", "C1-L", "C1-H", "C2")
 SCRIPT = "fast_pull"
 SCALE = np.asarray([1.0, 2.0], dtype=np.float64)

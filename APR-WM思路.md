@@ -1008,7 +1008,7 @@ R1-MS0（ManiSkill Drawer）保留为：
 1. **R1-MJ0**：原生 MuJoCo 单 hinge，9-cell force-space closure 通过。
 2. **R1-RS0**：robosuite `Door` Mode-A C0，9-cell 全部单独闭合。
 3. **R1-RS1**：frozen R0.6 Door 科学迁移正式跑完 → `RS1_GO=false`，但结论是
-   **差分可迁移性**，不是整体否定 R0.6（见 `REPORT/REP/R1_RS1_REPORT.md`）。
+   **差分可迁移性**，不是整体否定 R0.6（见 `REPORT/REP/R1/R1_RS1_REPORT.md`）。
 
 当前阶段链路：
 
@@ -1016,46 +1016,46 @@ R1-MS0（ManiSkill Drawer）保留为：
 \boxed{RS1A\text{ (frozen)} \rightarrow \cdots \rightarrow V7A \checkmark \rightarrow V7B\text{ memory }\checkmark/\text{C0 }\times \rightarrow V7B.1/B.2 \times \rightarrow V7B.3\text{ evidence-warranted }\checkmark}
 \]
 
-**R1-RS1A** 整段已冻结（`REPORT/REP/R1_RS1A_STAGE_FREEZE.md`）：  
+**R1-RS1A** 整段已冻结（`REPORT/REP/R1/R1_RS1A_STAGE_FREEZE.md`）：  
 tolerate / probe / revise_worthy + VoI 最优激励 \(A^\star=1.5A_0\)。
 
-**R1-RS1B** 正式 30-episode 已跑完（`REPORT/REP/R1_RS1B_REPORT.md`）：`RS1B_GO=false`。
+**R1-RS1B** 正式 30-episode 已跑完（`REPORT/REP/R1/R1_RS1B_REPORT.md`）：`RS1B_GO=false`。
 \(\mathcal P_{\mathrm{rev}}\) 上 passivity 与 H32 utility 通过；binary modeled-support
 retention 过严。
 
-**R1-RS1B.1**（`REPORT/REP/R1_RS1B1_REPORT.md`）：`RS1B.1_GO=false`。
+**R1-RS1B.1**（`REPORT/REP/R1/R1_RS1B1_REPORT.md`）：`RS1B.1_GO=false`。
 \(I_{\mathrm{exit}}>0\not\Rightarrow\mathrm{harmful}\)；连续 \(D\) 未胜过二元 \(I\)，因中间带为空。
 
-**R1-RS1B.2** 正式矩阵已跑完（`REPORT/REP/R1_RS1B2_REPORT.md`）：`RS1B.2_GO=true`。
+**R1-RS1B.2** 正式矩阵已跑完（`REPORT/REP/R1/R1_RS1B2_REPORT.md`）：`RS1B.2_GO=true`。
 targeted query 填满 B0–B3（各 60 条，intended=realized）。中间带**可以存在**；
 出域后 Spearman\((D,\mathrm{RMSE})\approx0.018\)，B2≈B3，主导的是 \(D=0\) 跨越而非 \(D\) 上的连续斜率。
-**support-risk 分支在此收束**：不设 RS1B.3，不把 \(I_{\mathrm{exit}}>0\) 做成 hard veto。冻结句见 `REPORT/REP/R1_RS1B_STAGE_FREEZE.md`：support 是 confidence-state，不是 accept/reject safety。
+**support-risk 分支在此收束**：不设 RS1B.3，不把 \(I_{\mathrm{exit}}>0\) 做成 hard veto。冻结句见 `REPORT/REP/R1/R1_RS1B_STAGE_FREEZE.md`：support 是 confidence-state，不是 accept/reject safety。
 
-**R1-RS1C** 正式 100-episode 已跑完（`REPORT/REP/R1_RS1C_REPORT.md`）：`RS1C_GO=true`。
+**R1-RS1C** 正式 100-episode 已跑完（`REPORT/REP/R1/R1_RS1C_REPORT.md`）：`RS1C_GO=true`。
 分层政策相对 \(\pi_{\mathrm{none}}\) 与 support-veto 均提高 seed-mean H32 gain；
 \(I_{\mathrm{exit}}\) 只抬 monitoring，不 veto。**不改写** `RS1B_GO=false`。
-**R1-RS2-C0** 已通过（`REPORT/REP/R1_RS2_C0_REPORT.md`）：27/27 cells
+**R1-RS2-C0** 已通过（`REPORT/REP/R1/R1_RS2_C0_REPORT.md`）：27/27 cells
 闭合，contact \(J_c^\top f_c\) 与 contact-`efc` 双路一致，false revision
 为 0；exposure adapter 冻结为 \(s^\star=2.0\)。
-**R1-RS2 Formal** 已跑完（`REPORT/REP/R1_RS2_REPORT.md`）：`RS2_GO=false`。
+**R1-RS2 Formal** 已跑完（`REPORT/REP/R1/R1_RS2_REPORT.md`）：`RS2_GO=false`。
 C0 特异性与 tolerate 安全通过，因此失败不是 “contact 把 \(J^\top f\) 算进
 structural residual”。失败在 allocation：contact \(D_0\) 达不到冻结的
 Mode-A 检测阈值，VoI extra 0 次 promote，\(\pi_{\mathrm{RS1C}}\) 0 install。
 \(\pi_{\mathrm{always}}\) 的 seed-mean H32 为正，说明若绕过 detect/VoI，
 接触下修正仍可有用。不改写 `RS1C_GO`；禁止事后改阈值或 adapter。
-**R1-RS2A** 已跑完（`REPORT/REP/R1_RS2A_REPORT.md`）：`RS2A_GO=true`。
+**R1-RS2A** 已跑完（`REPORT/REP/R1/R1_RS2A_REPORT.md`）：`RS2A_GO=true`。
 adapter 对上了 \(X_\phi\)，但 \(\kappa_\perp\) 下降；\(X_{\phi,\perp}\) 比
 \(X_\phi\) 更能跨域预测 \(D_0\)。这是诊断，不改 RS2 决策。
-**R1-RS2B** 已跑完（`REPORT/REP/R1_RS2B_REPORT.md`）：`RS2B_GO=true`。
+**R1-RS2B** 已跑完（`REPORT/REP/R1/R1_RS2B_REPORT.md`）：`RS2B_GO=true`。
 Mode-A \(C\) 在 C2 上低于 \(C_{\mathrm{tol}}\)，但接触下 incumbent 对 latch 真值的 \(L\approx0.14\gg C_{\mathrm{tol}}\)；
 同一 \(\Delta C\) 泛函在接触域仍 \(\approx0\)。不改 \(C_{\mathrm{tol}}\)，不重开 RS2A。
 
-**R1-RS3A 已跑完**（`REPORT/REP/R1_RS3A_REPORT.md`）：`RS3A_GO=false`。
+**R1-RS3A 已跑完**（`REPORT/REP/R1/R1_RS3A_REPORT.md`）：`RS3A_GO=false`。
 H1 在单一 \(\tau_S\) 下 C0 FPR 通过，但 H2 失败：\(S_\perp\) 的 Mode-A/contact
 gap 比 \(D_0\) 更大。局部 H0 白化不是跨干预标尺。
 **冻结原则**：local normalization \(\neq\) semantic normalization；
 same decision at one threshold \(\not\Rightarrow\) same evidential scale。
-禁止继续改 \(S_\perp\) 的 H0。**R1-RS3A.1 已跑完**（`REPORT/REP/R1_RS3A1_REPORT.md`）：
+禁止继续改 \(S_\perp\) 的 H0。**R1-RS3A.1 已跑完**（`REPORT/REP/R1/R1_RS3A1_REPORT.md`）：
 `RS3A.1_GO=false`。H1a 过（C0 上超额风险≈0，不是 memorizer）；H1b 与 H2 失败，
 \(g(E_{\mathrm{XR}})>g(D_0)\)。无条件标量证据标尺在这一表示层级上应视为不存在。
 不开 RS3A.2 / RS3B / RS3C。
@@ -1120,6 +1120,15 @@ same decision at one threshold \(\not\Rightarrow\) same evidential scale。
 | R5-I0-SELFSTRESS | 隐藏预应力→几何刚度能否三门+range+\(X{\leftrightarrow}C\)？ | **PASS=false**：\(D_h=0\)，\(X=\lambda\)；G_cons/G_xc Spearman \(0.75\) | 无 neural；判决冻结；不改 \(C\) |
 | R5-I1-SELFSTRESS | \(I(X;Y^{\mathrm{future}}\mid h^{S})>0\)？（ridge \(\Delta_Y\)） | **GO=true**：\(\Delta_Y/L_0=0.387\)；shuffle 更差 | 不改 I0；无 encoder |
 | R5-D0-preflight | oracle \(a^\star(\lambda)\) 是否 crossover？ | **PASS=true**：\(\lambda=0\to\) cons，\(\lambda\ge2\to\) mid | 未开 planner；不改 \(J\) |
+| R5-D0 | 冻结 \(\Pi\) 上 \(\mathrm{VoI}_{\Pi}(X)>0\)？ | **GO=false**：\(\mathrm{VoI}_{\Pi}<0\)；H3 过（改了错的 \(\lambda\)） | STOP；**非** oracle VoI\(\le0\) |
+| R6-A0 | \(L_Y\downarrow\) 为何 ranking 变差？ | D1/D2 true；D3 \(R^2=0.114\)；\(\rho_b<-1\) 解释全部错排 | 无训练；不预设 \(J\)-weighted WM |
+| R6-A1 | 错排是否落在低 \(z=\lvert\hat m\rvert/\sigma\) 区？ | PX：U1=1，\(\lambda=2\) \(z=0.47\)；P0 \(\lambda=0\) \(z=2.71\) 自信错 | cons–mid 对 PX 全 \(\lambda\) 低置信 |
+| R6-B0 | 冻结 \(z\ge1\) 才允许离开 \(\pi_0\)？ | **COLLAPSE**：\(\pi_B\equiv\pi_0\)；有害 2 撤、有用 0 接受 | 解析关闭；禁止扫阈值 |
+| R6 realization | A0–B0 是否收束？ | **FROZEN**：softening ≠ correction；veto ≠ alternative | 无 C0 |
+| R7 | 方向性 switch certificate？ | **A0 GO=true** | 单侧 \(L>\delta\)；非 \(|\hat A|/\sigma\) |
+| R7-P0 | 新 family 能否同时有正负 \(A\) 与非刀口 margin？ | **PASS=true**：G0–G4；4+4；\(D_h=0\) | P0 grid 不作 A0 证据 |
+| R7-A0 | \(X\) 能否单侧证明 \(A>\delta\)？ | **GO=true**：coverage 0.90；prec=1；recall=1；VoI\(>0\) | shuffle 永不 commit |
+| R7-P1 | 饱和后仍可切且 degree-2 不再精确？ | **PASS=true**：G0–G4；LOO \(R^2=0.68\)，RMSE \(1.35\times10^{-3}\) | 无证书；A1 准入未实现 |
 
 ------
 
@@ -1173,9 +1182,13 @@ same decision at one threshold \(\not\Rightarrow\) same evidential scale。
 > \(I(X;\lambda\mid h^{S})>0\not\Rightarrow I(X;C\mid h^{S})>0\)。
 > Self-stress I0：当前侧解析成立，但 \(C=\|Y-Y_0\|_2\) fold（`PASS=false`，冻结）。
 > I1：不改该 \(C\)，直接问 \(I(X;Y^{\mathrm{future}}\mid h^{S})\)；ridge \(\Delta_Y/L_0=0.387\)，`GO=true`。
-> D0-preflight：冻结任务 \(J\) 下 oracle \(a^\star\) 随 \(\lambda\) 翻转（`PASS=true`）；预测信息 \(\neq\) 决策信息仍待 regret 闭环。
+> D0-preflight：冻结任务 \(J\) 下 oracle \(a^\star\) 随 \(\lambda\) 翻转（`PASS=true`）。
+> D0：冻结 \(\Pi\) 上 \(\mathrm{VoI}_{\Pi}(X)<0\)（`GO=false`）。self-stress **STOP**。
+> 非 oracle \(\mathrm{VoI}\le 0\)。预测相关 \(\checkmark\)、oracle 决策相关 \(\checkmark\)、有限 planner 实现 \(\times\)。
+> \(L_Y\downarrow\not\Rightarrow\) 正确 \(\arg\min J(\hat Y)\)。
+> 原则再拆：epistemic acquisition \(\rightarrow\) decision realization。
 > 边界：后果存在 \(\neq\) 到一条 baseline 的径向距离是合法全局坐标。
-> 账本：`REPORT/REP/R5_CONTACT_FAMILY_PAUSE.md`，`REPORT/REP/R5_I1_SELFSTRESS_REPORT.md`，`REPORT/REP/R5_D0_PREFLIGHT_REPORT.md`。
+> 账本：`REPORT/REP/R5/R5_CONTACT_FAMILY_PAUSE.md`，`REPORT/REP/R5/R5_SELFSTRESS_FAMILY_STOP.md`。
 > 无 encoder。Door 上触觉 C.5 与 RGB V7D 均为负：\(h^{S}\) 已饱和当前结构错误判断；继续加模态可以主动有害。
 > 因此 **无 V7E**；R4 已证明相对 \(h^{S}\) 的观测必要性问题，不先训 encoder。
 
@@ -1233,73 +1246,138 @@ $$
 
 当前 realism 线上 RS1C 与 **RS2-C0** 已通过，**RS2 Formal 未通过**，
 RS2A/B 是**诊断通过**而不是把 Formal 救活。阶段冻结见
-`REPORT/REP/R1_RS2_STAGE_FREEZE.md`：
+`REPORT/REP/R1/R1_RS2_STAGE_FREEZE.md`：
 
 \[
 \boxed{\text{The physics can transfer while the epistemics are context-dependent.}}
 \]
 
-Transport 主线冻结见 `REPORT/REP/R1_TRANSPORT_STAGE_FREEZE.md`。
+Transport 主线冻结见 `REPORT/REP/R1/R1_TRANSPORT_STAGE_FREEZE.md`。
 不要重跑 RS2，不要 contact-specific \(\tau\) 重拟合，不要 RS5B。
 **R1-RS5A** 作为旁路架构结果保留（`RS5A_GO=true`），不是主实验。
-**R3-V7A** 已跑完（`REPORT/REP/R3_V7A_REPORT.md`）：`V7A_GO=true`。
+**R3-V7A** 已跑完（`REPORT/REP/R3/R3_V7A_REPORT.md`）：`V7A_GO=true`。
 混合域情境化 \(p_{\mathrm{struct}}\) 在 held-out seed 上校准；不是 LOIO
 transport，也还不是持续 \(b_t\)。
-**R3-V7B** 已跑完（`REPORT/REP/R3_V7B_REPORT.md`）：`V7B_GO=false`。
+**R3-V7B** 已跑完（`REPORT/REP/R3/R3_V7B_REPORT.md`）：`V7B_GO=false`。
 GRU \(p_t\) 终局与中点 Brier 均优于 V7A 静态摘要；失败是 C0 瞬态把结构信念
 抬高，不是长期 hysteresis。
-**R3-V7B.1** 已跑完（`REPORT/REP/R3_V7B1_REPORT.md`）：`V7B.1_GO=false`。
+**R3-V7B.1** 已跑完（`REPORT/REP/R3/R3_V7B1_REPORT.md`）：`V7B.1_GO=false`。
 同一 GRU 改 IBS 不能修好瞬态占用。
-**R3-V7B.2** 已跑完（`REPORT/REP/R3_V7B2_REPORT.md`）：`V7B.2_GO=false`。
+**R3-V7B.2** 已跑完（`REPORT/REP/R3/R3_V7B2_REPORT.md`）：`V7B.2_GO=false`。
 快慢+门控保留并改善了对 B2 的累积，但不降低 C0 占用。
-**R3-V7B.3** 已跑完（`REPORT/REP/R3_V7B3_REPORT.md`）：`V7B.3_GO=true`。
+**R3-V7B.3** 已跑完（`REPORT/REP/R3/R3_V7B3_REPORT.md`）：`V7B.3_GO=true`。
 匹配 C0/C1 反事实上的 \(w_t\) 监督压低 C0 占用（FPR \(0.006\)）且 \(p_t\) 跟踪证据；
 同一 GRU，runtime 不用反事实。
-**R3-V7C** 已跑完（`REPORT/REP/R3_V7C_REPORT.md`）：`V7C_GO=true`。
+**R3-V7C** 已跑完（`REPORT/REP/R3/R3_V7C_REPORT.md`）：`V7C_GO=true`。
 推理时 oracle 接触换成带噪腕部/关节残差后，证据时序与 C0 占用仍在（FPR \(0.013\)）；
 接触信息对认识决策有用，但不是所有汇总指标上都单调增益。
-阶段冻结见 `REPORT/REP/R3_V7_STAGE_FREEZE.md`。
-**R3-V7C.1** 已跑完（`REPORT/REP/R3_V7C1_REPORT.md`）：`V7C.1_GO=false`。
+阶段冻结见 `REPORT/REP/R3/R3_V7_STAGE_FREEZE.md`。
+**R3-V7C.1** 已跑完（`REPORT/REP/R3/R3_V7C1_REPORT.md`）：`V7C.1_GO=false`。
 H1–H3 过、H4 败：触觉通道相对无接触没有认识增益。不要怀疑 V7B.3/V7C；
 归因于触觉表示瓶颈。V7D / RGB 锁定。
-**R3-V7C.2** 已跑完（`REPORT/REP/R3_V7C2_REPORT.md`）：locus **FIELD**。
+**R3-V7C.2** 已跑完（`REPORT/REP/R3/R3_V7C2_REPORT.md`）：locus **FIELD**。
 相对 \(h^{-c}\)，8×8 taxel 对 \(e_t\) 无增量（\(\Delta_X=0.001\)）。不要换 CNN / 开 fusion / 开 V7D。
-**R3-V7C.3** 已跑完（`REPORT/REP/R3_V7C3_REPORT.md`）：触觉分支 stop **未**触发。
+**R3-V7C.3** 已跑完（`REPORT/REP/R3/R3_V7C3_REPORT.md`）：触觉分支 stop **未**触发。
 最大增量是 \(X_{NSG}\)（\(\Delta=0.057\)）；剪切嵌套未证明增量；\(N\) 不推翻 C.2。
 不开 encoder / V7D。
-**R3-V7C.4** 已跑完（`REPORT/REP/R3_V7C4_REPORT.md`）：冻结判决 **SUFFICIENT**。
+**R3-V7C.4** 已跑完（`REPORT/REP/R3/R3_V7C4_REPORT.md`）：冻结判决 **SUFFICIENT**。
 同 run \(\Delta_X=0.015\)、\(\Delta_Z=0.014\)；shuffle 几乎不变。不训 B5 / 不开 V7D。
-**R3-V7C.5** 已跑完（`REPORT/REP/R3_V7C5_REPORT.md`）：`V7C.5_GO=false`。
+**R3-V7C.5** 已跑完（`REPORT/REP/R3/R3_V7C5_REPORT.md`）：`V7C.5_GO=false`。
 在 B5-S 上追加 \(Z_{NSG}\) 使 \(e_t\) BCE 与 Brier 变差；时间门控失败。不开 V7C.6。
-**R3-V7 Door 触觉支线已冻结**（`REPORT/REP/R3_V7_EVIDENCE_CHAIN.md`）：
+**R3-V7 Door 触觉支线已冻结**（`REPORT/REP/R3/R3_V7_EVIDENCE_CHAIN.md`）：
 表示充分 \(\neq\) 条件有用；本分布上不再扩 CNN/fusion。无 V7C.6。
-**R3-V7D** 已跑完（`REPORT/REP/R3_V7D_REPORT.md`）：`V7D_GO=false`。
+**R3-V7D** 已跑完（`REPORT/REP/R3/R3_V7D_REPORT.md`）：`V7D_GO=false`。
 冻结 RGB encoder 相对 \(h^{S}\) 无条件增量（real 比 shuffle 更差）。
-**Door / R3-V7 正式关闭**（`REPORT/REP/R3_V7_STAGE_FREEZE.md`）：无 V7E。
+**Door / R3-V7 正式关闭**（`REPORT/REP/R3/R3_V7_STAGE_FREEZE.md`）：无 V7E。
 \(h^{S}\) 已饱和当前 Door 结构错误判断。
-**R4-C0 已跑完**（`REPORT/REP/R4_C0_REPORT.md`）：`R4_C0_GO=false`。
+**R4-C0 已跑完**（`REPORT/REP/R4/R4_C0_REPORT.md`）：`R4_C0_GO=false`。
 \(\Delta_X=-0.015\le\varepsilon\)。宏观残差能量 \(\sim10^{-7}\)，\(w_t\equiv0\)。
 I1 证明局部可观测；C0 证明该局部状态不进入当前 \(e_t\)。不训 encoder，不改 I0。
-**R4-I0 v1 未过、v2 已过**（`REPORT/REP/R4_I0_REPORT.md`、`REPORT/REP/R4_I0_V2_REPORT.md`）。
+**R4-I0 v1 未过、v2 已过**（`REPORT/REP/R4/R4_I0_REPORT.md`、`REPORT/REP/R4/R4_I0_V2_REPORT.md`）。
 v1：标量 \(\mu\) 泄漏进 \(F_n\)。v2：同 \(\mu\)、同平均刚度、左右 compliance 交换，宏观 \(h^{S}\) 对齐且 \(p,\tau_y\) 空间翻转。
-**R4-I1 已过**（`REPORT/REP/R4_I1_REPORT.md`）：完整宏观通道、按 \(q_0\) 划分；
+**R4-I1 已过**（`REPORT/REP/R4/R4_I1_REPORT.md`）：完整宏观通道、按 \(q_0\) 划分；
 \(\mathrm{AUROC}(h^{S})=0.556\)，增益 \(0.440\)。C0 已跑且未过。
-**R4-C1 已跑**（`REPORT/REP/R4_C1_REPORT.md`）：F0 过（弱未来分叉）；
+**R4-C1 已跑**（`REPORT/REP/R4/R4_C1_REPORT.md`）：F0 过（弱未来分叉）；
 F1 二值标签饱和未评估；`GO=false`。不是 nuisance。不训 encoder。
-**R4-C2 已跑且停线**（`REPORT/REP/R4_C2_REPORT.md`）：`GO=false`。
+**R4-C2 已跑且停线**（`REPORT/REP/R4/R4_C2_REPORT.md`）：`GO=false`。
 连续 \(C\) 上 \(\Delta_C\approx 0\)。未来后果存在 \(\not\Rightarrow\) 触觉能量化它。
-**R4 family 正式停止**（`REPORT/REP/R4_FAMILY_STOP.md`）。无 C3。
-**R5-I0 接触族已 PAUSE**（`REPORT/REP/R5_CONTACT_FAMILY_PAUSE.md`）：
+**R4 family 正式停止**（`REPORT/REP/R4/R4_FAMILY_STOP.md`）。无 C3。
+**R5-I0 接触族已 PAUSE**（`REPORT/REP/R5/R5_CONTACT_FAMILY_PAUSE.md`）：
 v1 \(C\)✓\(X\)×；v2 \(X\) 部分✓、\(h^{S}\)×、\(C\)×；v3 \(h^{S}\)✓\(X\)✓\(C\)×。
 不是不可能定理。无 neural。不回到 R4。不再枚举接触表面 pattern。
-**R5-I0-SELFSTRESS 已跑且判决冻结**（`REPORT/REP/R5_I0_SELFSTRESS_REPORT.md`）：
+**R5-I0-SELFSTRESS 已跑且判决冻结**（`REPORT/REP/R5/R5_I0_SELFSTRESS_REPORT.md`）：
 \(D_h=0\) 且 \(X=\lambda\)，标量 \(C=\|Y-Y_0\|_2\) fold，`PASS=false`。
-**R5-I1-SELFSTRESS `GO=true`**（`REPORT/REP/R5_I1_SELFSTRESS_REPORT.md`）：
+**R5-I1-SELFSTRESS `GO=true`**（`REPORT/REP/R5/R5_I1_SELFSTRESS_REPORT.md`）：
 \(X\) 降低 held 未来宏观轨迹风险 \(\Delta_Y/L_0=0.387\)。不改 I0 \(C\)。无 encoder。
-**R5-D0-preflight `PASS=true`**（`REPORT/REP/R5_D0_PREFLIGHT_REPORT.md`）：
+**R5-D0-preflight `PASS=true`**（`REPORT/REP/R5/R5_D0_PREFLIGHT_REPORT.md`）：
 oracle \(a^\star\) 在 \(\lambda=0\) 为 cons、其余为 mid。未测 regret。
-更长程的 realism 问题仍然是：
-
-\[ \boxed{ \text{这套循环能否从受控 SAPIEN 动力学迁移到真实多资产、多接触、多任务的 manipulation 环境？} } \]
-
-这就是 robosuite / MuJoCo（以及后续 RoboTwin）等 realism expansion 真正要回答的问题。
+**R5-D0 `GO=false`，self-stress family STOP**（`REPORT/REP/R5/R5_D0_REPORT.md`，
+`REPORT/REP/R5/R5_SELFSTRESS_FAMILY_STOP.md`）：
+\(\mathrm{VoI}_{\Pi}(X)<0\)。oracle 决策相关仍成立。不把负结果写成 oracle VoI\(\le 0\)。不救 D0。
+**R6-A0**（`REPORT/REP/R6/R6_A0_REPORT.md`）：冻结 D0 的离线 \(\rho_b\) 分解。
+D1 把全部错排归因于 \(\hat m_b<0\)；D2 正式区分 global \(L_Y\) 与
+margin violation；D3 显示 \(J\) 高度非线性。不把 \(J\) 写进 dynamics。
+**R6-A1**（`REPORT/REP/R6/R6_A1_REPORT.md`）：nested-LOO 在 pairwise \(J\)-margin
+上给 \(\sigma_{ab}\)。PX 三次错排都是 \(z<1\)；同一 cons–mid 对在正确
+\(\lambda\) 上也是 \(z<1\)。
+**R6-B0**（`REPORT/REP/R6/R6_B0_REPORT.md`）：`POLICY_COLLAPSE=true`。弃权能撤回
+有害切换，不能恢复正 \(\mathrm{VoI}_\Pi\)。realization 支线停止，不扫 \(z_{\min}\)。
+**R6 realization FROZEN**（`REPORT/REP/R6/R6_REALIZATION_FREEZE.md`）：无 C0。
+**R7-P0 `PASS=true`**（`REPORT/REP/R7/R7_P0_REPORT.md`）：
+hidden \(\alpha\) 使 \(A=J_{\mathrm{mid}}-J_{\mathrm{cons}}\) 跨零，两侧各 4 个
+\(\lvert A\rvert>10^{-3}\) 的 regime。
+**R7-A0 `GO=true`**（`REPORT/REP/R7/R7_A0_REPORT.md`）：fresh \(\alpha\) 上
+\(L=\hat A-q\)，\(L>\delta\) 才切 cons；shuffle \(X\) 的 VoI 为 0。
+**R7-P1 `PASS=true`**（`REPORT/REP/R7/R7_P1_REPORT.md`）：\(\operatorname{sat}(\alpha u;2)\)
+下 switchability 仍干净，degree-2 LOO \(R^2=0.68\)。
+**R7-A1 `GO=true`**（`REPORT/REP/R7/R7_A1_REPORT.md`）：不升级 \(f\)；
+\(q\) 升至 \(1.30\times10^{-3}\)；precision=1；useful recall=0.273；
+VoI\(>0\)；shuffle 零 commit。退化方式是更多弃权，不是有害 commit。
+**R7-A2 `GO=true`**（`REPORT/REP/R7/R7_A2_REPORT.md`）：证书冻结，只换
+植物钉死结点的三次截断幂样条。\(q\downarrow\)，recall \(0.273\to 0.909\)，
+VoI\(\uparrow\)，precision 仍为 1。剩余 1 个 useful miss 是 certificate
+width，不是 model bias。**A-series 冻结。**
+**R7-B0 `GO=true`**（`REPORT/REP/R7/R7_B0_REPORT.md`）：advantage 来自
+\(L_Y\) 训练的低容量 future predictor，再 \(J(\hat Y)\)。同一证书。
+coverage 0.929，precision 1，recall 0.70，VoI\(>0\)。相对同分割 direct
+\(f\)：\(q\) 更宽、recall 更低，但是安全弃权，不是无效 commit。
+**R7-B1 `shift_valid=false`**（`REPORT/REP/R7/R7_B1_REPORT.md`）：不改编
+\(f_{\mathrm{WM}}\) 与 \(q\)。只把测试 \(F_{\max}\) 改为 \(1.5\)。coverage
+\(0.357\)，precision \(0.571\)，三次有害 commit。不是 conformal 方法失败，
+而是 ID calibration 不能为 shifted dynamics 背书。
+**R8-P0 `PASS=false`**（`REPORT/REP/R8/R8_P0_REPORT.md`）：冻结短 probe。
+被动 \(h^S\) 仍不可辨；commit-set 上 \(S_{\mathrm{epi}}\) 把 invalid 与
+ID/benign 分开（benign \(F_{\max}=2.2\) 仍 valid，残差不大）。同幕
+\(C_{\mathrm{down}}\) 约为 \(\lvert A\rvert\) 的 3.3 倍，G3 失败。不训练
+detector，不开 A0。
+**R8-P1 `PASS=false`**（`REPORT/REP/R8/R8_P1_REPORT.md`）：只改四相
+\([+,-,-,+]\)。G3 降到 \(0.088\)；G1 间隙只有 \(1.14\times10^{-4}\)；
+终端 \(y\) 小但 \(\dot y\) 仍约 \(7\times10^{-3}\)。自消除修了代价，也削了
+validity 信息。不开 A0，不扫 \(T\)。
+**R8-P2 `PASS=false`**（`REPORT/REP/R8/R8_P2_REPORT.md`）：把回零条件换成
+有阻尼核，三段 \([+,-,+]\)、\(n=(13,25,12)\)（只比四段更大的 \(d_1\)）。
+G-return 与 G3 过；G1 仍约 \(1.13\times10^{-4}\)。open-loop same-episode
+probe family 冻结。
+**R8-R0 `PASS=false`**（`REPORT/REP/R8/R8_R0_REPORT.md`）：复用 P0 单向
+probe，再加名义 PD reset（\(k_p=50,k_d=8\)），同一 \(T_{\mathrm{total}}=0.50\,\mathrm{s}\)
+计费。G1 仍为 \(1.82\times10^{-3}\)；reset 用尽剩余 \(0.40\,\mathrm{s}\) 仍
+\(D\approx 10^{-2}\)。pattern = recovery_failure。不开 A0，不训 detector。
+R8 同幕 family **STOP**（`REPORT/REP/R8/R8_SAME_HORIZON_STOP.md`）。
+**R9-P0 `PASS=true`**（`REPORT/REP/R9/R9_P0_REPORT.md`）：独立校准时钟。
+冻结 PD 的 \(T_{\mathrm{recover}}\approx 0.63\)–\(0.68\,\mathrm{s}\)；
+\(K_{\min}=2\)。oracle 摊销可行。
+**R9-A0 `GO=true`**（`REPORT/REP/R9/R9_A0_REPORT.md`）：两层证书
+\(b(\mathcal V)\ge 0.5\) 再 \(L_{\mathrm{WM}}>\delta\)。G-safe precision 1；
+\(\mathrm{NetVoI}(K=2)>0\) 且等于 oracle ceiling；shuffle 在 \(K=2\) 为负。
+\(\Delta K_{\mathrm{realization}}=0\)。无 decay / change detection。
+**R9-B0 `GO=false`**（`REPORT/REP/R9/R9_B0_REPORT.md`）：被动 CUSUM 撤销。
+许可后的 \(u_{\mathrm{cons}}=0.4\) 在 commit-set 上对三类 \(F_{\max}\) 都不饱和，
+\(r_k\) 相同；普通任务监视看不见 applicability。不调 \(h\)。
+**policy-induced epistemic blindness.**
+**R9-B1-P0 `PASS=false`**（`REPORT/REP/R9/R9_B1_P0_REPORT.md`）：\(M=2\)
+冻结周期再验证。G-stale 过（repeat \(=0\)）；stay NetVoI 为正；invalid
+上 periodic \(<\) never（多付 \(C_{\mathrm{cal}}\)）。不扫 \(M\)。
+**R9 toy-family STOP**（`REPORT/REP/R9/R9_TOY_FAMILY_STOP.md`）。
+**R10**（`REPORT/REG/R10/R10_PREREG.md`）：真实物理 **shadow** validation。
+不自主 revision。第一门 R10-C0 在无真实残差日志时锁定。
+更长程的 realism 问题变成：真实操作分布下，R9 的哪一条边界还活着。

@@ -31,7 +31,7 @@ from .v3 import tangent_decomposition
 from .v5 import V5Config, _fit_base_posterior
 
 
-PREREG_PATH = "REPORT/R1_RS1A_PREREG.md"
+PREREG_PATH = "REPORT/REG/R1/R1_RS1A_PREREG.md"
 PRIMARY_REGIMES = ("C0", "C1-L", "C1-H", "C2-latch")
 DIAGNOSTIC_REGIMES = ("CNEG",)
 ALL_REGIMES = PRIMARY_REGIMES + DIAGNOSTIC_REGIMES

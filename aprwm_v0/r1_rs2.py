@@ -27,7 +27,7 @@ from .r1_rs1b import _require_rs1a5_unlock
 from .v06 import _write_csv, _write_json
 
 
-PREREG_PATH = "REPORT/REG/R1_RS2_PREREG.md"
+PREREG_PATH = "REPORT/REG/R1/R1_RS2_PREREG.md"
 DEV_SEEDS = (11001, 11011, 11021)
 SCRIPTS = ("slow_pull", "fast_pull", "pull_release")
 REPEATS = (0, 1, 2)

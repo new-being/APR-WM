@@ -42,7 +42,7 @@ from .v06 import _write_csv, _write_json
 from .v3 import _ridge_fit
 
 
-PREREG_PATH = "REPORT/REG/R1_RS3A1_PREREG.md"
+PREREG_PATH = "REPORT/REG/R1/R1_RS3A1_PREREG.md"
 SEEDS = (13101, 13111, 13121, 13131, 13141)
 REGIMES = ("C0", "C1-L", "C1-H")
 MODE_A_AMPS = (1.0, 1.5)

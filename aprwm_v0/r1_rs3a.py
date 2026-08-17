@@ -37,7 +37,7 @@ from .v3 import tangent_decomposition
 from .v5 import V5Config, _fit_base_posterior
 
 
-PREREG_PATH = "REPORT/REG/R1_RS3A_PREREG.md"
+PREREG_PATH = "REPORT/REG/R1/R1_RS3A_PREREG.md"
 SEEDS = (12101, 12111, 12121, 12131, 12141)
 REGIMES = ("C0", "C1-L", "C1-H")
 MODE_A_AMPS = (1.0, 1.5)
