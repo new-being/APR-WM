@@ -508,6 +508,559 @@ def build_parser() -> argparse.ArgumentParser:
         help="Plumbing smoke only (seed 9011 x alpha=-0.24 x 1.5A0)",
     )
 
+    r1_rs1b1_parser = subparsers.add_parser(
+        "r1-rs1b1",
+        help="Calibrate modeled-support departure against H32 prediction risk",
+    )
+    r1_rs1b1_parser.add_argument("--output", default="runs/r1_rs1b1/formal")
+    r1_rs1b1_parser.add_argument(
+        "--rs0-summary",
+        default="runs/r1_rs0/c0/summary.json",
+    )
+    r1_rs1b1_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r1_rs1b1_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (seed 9021 x alpha=-0.24 x 1.5A0)",
+    )
+
+    r1_rs1b2_parser = subparsers.add_parser(
+        "r1-rs1b2",
+        help="Identify whether intermediate support-departure bands can be populated",
+    )
+    r1_rs1b2_parser.add_argument("--output", default="runs/r1_rs1b2/formal")
+    r1_rs1b2_parser.add_argument(
+        "--rs0-summary",
+        default="runs/r1_rs0/c0/summary.json",
+    )
+    r1_rs1b2_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r1_rs1b2_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (seed 9031 x alpha=-0.24 x 1.5A0)",
+    )
+
+    r1_rs1c_parser = subparsers.add_parser(
+        "r1-rs1c",
+        help="Run R1-RS1C layered epistemic-physical policy (new hypothesis)",
+    )
+    r1_rs1c_parser.add_argument("--output", default="runs/r1_rs1c/formal")
+    r1_rs1c_parser.add_argument(
+        "--rs0-summary",
+        default="runs/r1_rs0/c0/summary.json",
+    )
+    r1_rs1c_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r1_rs1c_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (seed 9041 x {0,-0.24} x {0.5,1.5}A0)",
+    )
+
+    r1_rs2_c0_parser = subparsers.add_parser(
+        "r1-rs2-c0",
+        help="Run oracle J^T f robot-contact closure before RS2 formal",
+    )
+    r1_rs2_c0_parser.add_argument("--output", default="runs/r1_rs2/c0")
+    r1_rs2_c0_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+        help="Passing RS1A.5 artifact with frozen exposure-cell thresholds",
+    )
+    r1_rs2_c0_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="One-cell contact plumbing smoke; does not evaluate C0 gates",
+    )
+
+    r1_rs2_parser = subparsers.add_parser(
+        "r1-rs2",
+        help="Run frozen RS1C policy under robot-contact excitation (RS2 Formal)",
+    )
+    r1_rs2_parser.add_argument("--output", default="runs/r1_rs2/formal")
+    r1_rs2_parser.add_argument(
+        "--rs2-c0-summary",
+        default="runs/r1_rs2/c0_v2/summary.json",
+        help="Passing RS2-C0 summary; Formal stays locked unless rs2_c0_pass",
+    )
+    r1_rs2_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r1_rs2_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (seed 11101 x C0/C1-H x slow_pull); no GO gates",
+    )
+
+    r1_rs2a_parser = subparsers.add_parser(
+        "r1-rs2a",
+        help="Diagnose contact vs Mode-A tangent-visible exposure (no policy retune)",
+    )
+    r1_rs2a_parser.add_argument("--output", default="runs/r1_rs2a/formal")
+    r1_rs2a_parser.add_argument(
+        "--rs2-formal-summary",
+        default="runs/r1_rs2/formal/summary.json",
+        help="Completed RS2 Formal summary; RS2A stays locked until scientific_result",
+    )
+    r1_rs2a_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r1_rs2a_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (Mode-A 1.5A0 + contact fast_pull); no H1–H3",
+    )
+
+    r1_rs2b_parser = subparsers.add_parser(
+        "r1-rs2b",
+        help="Diagnose Mode-A vs contact consequence transport (no policy retune)",
+    )
+    r1_rs2b_parser.add_argument("--output", default="runs/r1_rs2b/formal")
+    r1_rs2b_parser.add_argument(
+        "--rs2a-summary",
+        default="runs/r1_rs2a/formal/summary.json",
+        help="Completed RS2A summary; RS2B stays locked until scientific_result",
+    )
+    r1_rs2b_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r1_rs2b_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (seed 11101 x C0/C2); no H0–H2",
+    )
+
+    r1_rs3a_parser = subparsers.add_parser(
+        "r1-rs3a",
+        help="Learner-visible transport-calibrated structural evidence (no policy)",
+    )
+    r1_rs3a_parser.add_argument("--output", default="runs/r1_rs3a/formal")
+    r1_rs3a_parser.add_argument(
+        "--rs2b-summary",
+        default="runs/r1_rs2b/formal/summary.json",
+        help="Completed RS2B summary; RS3A stays locked until scientific_result",
+    )
+    r1_rs3a_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r1_rs3a_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (Mode-A 1.5A0 + contact fast_pull); no H1–H2",
+    )
+
+    r1_rs3a1_parser = subparsers.add_parser(
+        "r1-rs3a1",
+        help="Cross-fitted structural excess-risk evidence (no policy, no S_perp repair)",
+    )
+    r1_rs3a1_parser.add_argument("--output", default="runs/r1_rs3a1/formal")
+    r1_rs3a1_parser.add_argument(
+        "--rs3a-summary",
+        default="runs/r1_rs3a/formal/summary.json",
+        help="Completed RS3A summary; RS3A.1 stays locked until scientific_result",
+    )
+    r1_rs3a1_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r1_rs3a1_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (Mode-A 1.5A0 + contact fast_pull); no H1–H2",
+    )
+
+    r1_rs4a_parser = subparsers.add_parser(
+        "r1-rs4a",
+        help="Geometry-conditioned structural evidence (LOIO; no domain ID, no scalar repair)",
+    )
+    r1_rs4a_parser.add_argument("--output", default="runs/r1_rs4a/formal")
+    r1_rs4a_parser.add_argument(
+        "--rs3a1-summary",
+        default="runs/r1_rs3a1/formal/summary.json",
+        help="Completed RS3A.1 summary; RS4A stays locked until scientific_result",
+    )
+    r1_rs4a_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r1_rs4a_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only (Mode-A + fast_pull + pull_push); no LOIO GO",
+    )
+
+    r1_rs5a_parser = subparsers.add_parser(
+        "r1-rs5a",
+        help="Intervention-indexed calibration with abstention (no revision / no RS4A.1)",
+    )
+    r1_rs5a_parser.add_argument("--output", default="runs/r1_rs5a/formal")
+    r1_rs5a_parser.add_argument(
+        "--rs4a-summary",
+        default="runs/r1_rs4a/formal/summary.json",
+        help="Completed RS4A summary; RS5A stays locked until scientific_result",
+    )
+    r1_rs5a_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r1_rs5a_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no H1–H4",
+    )
+
+    r3_v7a_parser = subparsers.add_parser(
+        "r3-v7a",
+        help="Mixture-trained contextual epistemic belief (not RS5B; not old V7 routing)",
+    )
+    r3_v7a_parser.add_argument("--output", default="runs/r3_v7a/formal")
+    r3_v7a_parser.add_argument(
+        "--rs5a-summary",
+        default="runs/r1_rs5a/formal/summary.json",
+        help="Completed RS5A summary; R3-V7A stays locked until scientific_result",
+    )
+    r3_v7a_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r3_v7a_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no mixture GO",
+    )
+
+    r3_v7b_parser = subparsers.add_parser(
+        "r3-v7b",
+        help="Persistent contextual epistemic belief vs V7A static summary",
+    )
+    r3_v7b_parser.add_argument("--output", default="runs/r3_v7b/formal")
+    r3_v7b_parser.add_argument(
+        "--v7a-summary",
+        default="runs/r3_v7a/formal/summary.json",
+        help="Completed V7A summary; R3-V7B stays locked until v7a_go",
+    )
+    r3_v7b_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r3_v7b_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no H1–H3",
+    )
+
+    r3_v7b1_parser = subparsers.add_parser(
+        "r3-v7b1",
+        help="Same GRU as V7B; IBS objective vs time-weighted BCE (no V7C)",
+    )
+    r3_v7b1_parser.add_argument("--output", default="runs/r3_v7b1/formal")
+    r3_v7b1_parser.add_argument(
+        "--v7b-summary",
+        default="runs/r3_v7b/formal/summary.json",
+        help="Completed V7B scientific summary; GO may be false",
+    )
+    r3_v7b1_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r3_v7b1_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no IBS GO",
+    )
+
+    r3_v7b2_parser = subparsers.add_parser(
+        "r3-v7b2",
+        help="Fast/slow epistemic state vs single GRU and capacity-matched GRU",
+    )
+    r3_v7b2_parser.add_argument("--output", default="runs/r3_v7b2/formal")
+    r3_v7b2_parser.add_argument(
+        "--v7b1-summary",
+        default="runs/r3_v7b1/formal/summary.json",
+        help="Completed V7B.1 scientific summary; GO may be false",
+    )
+    r3_v7b2_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r3_v7b2_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no fast/slow GO",
+    )
+
+    r3_v7b3_parser = subparsers.add_parser(
+        "r3-v7b3",
+        help="Matched C0/C1 evidence-warranted belief vs B2 BCE (no V7C)",
+    )
+    r3_v7b3_parser.add_argument("--output", default="runs/r3_v7b3/formal")
+    r3_v7b3_parser.add_argument(
+        "--v7b2-summary",
+        default="runs/r3_v7b2/formal/summary.json",
+    )
+    r3_v7b3_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r3_v7b3_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no warranted GO",
+    )
+
+    r3_v7c_parser = subparsers.add_parser(
+        "r3-v7c",
+        help="B5 GRU: oracle vs sensorized vs no contact (no V7D)",
+    )
+    r3_v7c_parser.add_argument("--output", default="runs/r3_v7c/formal")
+    r3_v7c_parser.add_argument(
+        "--v7b3-summary",
+        default="runs/r3_v7b3/formal/summary.json",
+    )
+    r3_v7c_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r3_v7c_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no V7C GO",
+    )
+
+    r3_v7c1_parser = subparsers.add_parser(
+        "r3-v7c1",
+        help="Learned tactile z vs B5-S warranted belief (no V7D)",
+    )
+    r3_v7c1_parser.add_argument("--output", default="runs/r3_v7c1/formal")
+    r3_v7c1_parser.add_argument(
+        "--v7c-summary",
+        default="runs/r3_v7c/formal/summary.json",
+    )
+    r3_v7c1_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r3_v7c1_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no V7C.1 GO",
+    )
+
+    r3_v7c2_parser = subparsers.add_parser(
+        "r3-v7c2",
+        help="Tactile field/encoder/fusion information locus (diagnostic; no V7D)",
+    )
+    r3_v7c2_parser.add_argument("--output", default="runs/r3_v7c2/formal")
+    r3_v7c2_parser.add_argument(
+        "--v7c1-summary",
+        default="runs/r3_v7c1/formal/summary.json",
+    )
+    r3_v7c2_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r3_v7c2_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no locus classification",
+    )
+
+    r3_v7c3_parser = subparsers.add_parser(
+        "r3-v7c3",
+        help="Tactile observation sufficiency ablation (no encoder / no V7D)",
+    )
+    r3_v7c3_parser.add_argument("--output", default="runs/r3_v7c3/formal")
+    r3_v7c3_parser.add_argument(
+        "--v7c2-summary",
+        default="runs/r3_v7c2/formal/summary.json",
+    )
+    r3_v7c3_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r3_v7c3_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no observation deltas",
+    )
+
+    r3_v7c4_parser = subparsers.add_parser(
+        "r3-v7c4",
+        help="NSG representation sufficiency (no B5 / no V7D)",
+    )
+    r3_v7c4_parser.add_argument("--output", default="runs/r3_v7c4/formal")
+    r3_v7c4_parser.add_argument(
+        "--v7c3-summary",
+        default="runs/r3_v7c3/formal/summary.json",
+    )
+    r3_v7c4_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r3_v7c4_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no representation trichotomy",
+    )
+
+    r3_v7c5_parser = subparsers.add_parser(
+        "r3-v7c5",
+        help="B5-S + Z_NSG belief integration (no V7D)",
+    )
+    r3_v7c5_parser.add_argument("--output", default="runs/r3_v7c5/formal")
+    r3_v7c5_parser.add_argument(
+        "--v7c4-summary",
+        default="runs/r3_v7c4/formal/summary.json",
+    )
+    r3_v7c5_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r3_v7c5_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no belief-integration GO",
+    )
+
+    r3_v7d_parser = subparsers.add_parser(
+        "r3-v7d",
+        help="B5-S + Z_RGB conditional modality value (frozen encoder)",
+    )
+    r3_v7d_parser.add_argument("--output", default="runs/r3_v7d/formal")
+    r3_v7d_parser.add_argument(
+        "--v7c5-summary",
+        default="runs/r3_v7c5/formal/summary.json",
+    )
+    r3_v7d_parser.add_argument(
+        "--rs1a5-summary",
+        default="runs/r1_rs1a5/formal/summary.json",
+    )
+    r3_v7d_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no conditional-usefulness GO",
+    )
+
+    r4_i0_parser = subparsers.add_parser(
+        "r4-i0",
+        help="R4 contact-regime closure (infrastructure; not C0 GO)",
+    )
+    r4_i0_parser.add_argument("--output", default="runs/r4_i0/v2")
+    r4_i1_parser = subparsers.add_parser(
+        "r4-i1",
+        help="R4 no-leak audit of h^S (infrastructure; not C0 GO)",
+    )
+    r4_i1_parser.add_argument("--output", default="runs/r4_i1/formal")
+    r4_i1_parser.add_argument(
+        "--i0-summary",
+        default="runs/r4_i0/v2/summary.json",
+    )
+
+    r4_c0_parser = subparsers.add_parser(
+        "r4-c0",
+        help="R4 observation necessity of tactile given h^S",
+    )
+    r4_c0_parser.add_argument("--output", default="runs/r4_c0/formal")
+    r4_c0_parser.add_argument(
+        "--i0-summary",
+        default="runs/r4_i0/v2/summary.json",
+    )
+    r4_c0_parser.add_argument(
+        "--i1-summary",
+        default="runs/r4_i1/formal/summary.json",
+    )
+    r4_c0_parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Plumbing smoke only; no conditional-usefulness GO",
+    )
+
+    r4_c1_parser = subparsers.add_parser(
+        "r4-c1",
+        help="R4 consequence-warranted local epistemic value",
+    )
+    r4_c1_parser.add_argument("--output", default="runs/r4_c1/formal")
+    r4_c1_parser.add_argument(
+        "--i0-summary",
+        default="runs/r4_i0/v2/summary.json",
+    )
+    r4_c1_parser.add_argument(
+        "--i1-summary",
+        default="runs/r4_i1/formal/summary.json",
+    )
+    r4_c1_parser.add_argument(
+        "--c0-summary",
+        default="runs/r4_c0/formal/summary.json",
+    )
+
+    r4_c2_parser = subparsers.add_parser(
+        "r4-c2",
+        help="R4 continuous future-consequence epistemic value",
+    )
+    r4_c2_parser.add_argument("--output", default="runs/r4_c2/formal")
+    r4_c2_parser.add_argument(
+        "--i0-summary",
+        default="runs/r4_i0/v2/summary.json",
+    )
+    r4_c2_parser.add_argument(
+        "--i1-summary",
+        default="runs/r4_i1/formal/summary.json",
+    )
+    r4_c2_parser.add_argument(
+        "--c1-summary",
+        default="runs/r4_c1/formal/summary.json",
+    )
+
+    r5_i0_parser = subparsers.add_parser(
+        "r5-i0",
+        help="R5 physical feasibility of consequence-varying lambda (no neural probe)",
+    )
+    r5_i0_parser.add_argument("--output", default="runs/r5_i0/kt")
+    r5_i0_parser.add_argument(
+        "--mechanism",
+        choices=("kt", "prestress", "margin"),
+        default="kt",
+        help="kt=I0 v3 integral-constrained solref; prestress=v2; margin=v1",
+    )
+
+    r5_ss_parser = subparsers.add_parser(
+        "r5-i0-selfstress",
+        help="R5 self-stress geometric-stiffness I0 (no neural probe)",
+    )
+    r5_ss_parser.add_argument("--output", default="runs/r5_i0_selfstress/formal")
+
+    r5_i1_ss_parser = subparsers.add_parser(
+        "r5-i1-selfstress",
+        help="R5 self-stress I1: X predicts Y_future given h^S (ridge, no Adam)",
+    )
+    r5_i1_ss_parser.add_argument("--output", default="runs/r5_i1_selfstress/formal")
+    r5_i1_ss_parser.add_argument(
+        "--i0-summary",
+        default="runs/r5_i0_selfstress/formal/summary.json",
+    )
+
+    r5_d0_pf_parser = subparsers.add_parser(
+        "r5-d0-preflight",
+        help="R5 self-stress D0 oracle action-ranking preflight (no planner)",
+    )
+    r5_d0_pf_parser.add_argument("--output", default="runs/r5_d0_preflight/formal")
+    r5_d0_pf_parser.add_argument(
+        "--i1-summary",
+        default="runs/r5_i1_selfstress/formal/summary.json",
+    )
+
     eval_parser = subparsers.add_parser("evaluate", help="Evaluate a saved checkpoint")
     eval_parser.add_argument("--checkpoint", required=True)
     eval_parser.add_argument("--device", default="auto")
@@ -870,6 +1423,351 @@ def main(argv: list[str] | None = None) -> None:
             config=R1RS1BConfig(),
             smoke=bool(args.smoke),
         )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs1b1":
+        from .r1_rs1b1 import R1RS1B1Config, run_r1_rs1b1
+
+        result = run_r1_rs1b1(
+            args.output,
+            rs0_summary=args.rs0_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R1RS1B1Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs1b2":
+        from .r1_rs1b2 import R1RS1B2Config, run_r1_rs1b2
+
+        result = run_r1_rs1b2(
+            args.output,
+            rs0_summary=args.rs0_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R1RS1B2Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs1c":
+        from .r1_rs1c import R1RS1CConfig, run_r1_rs1c
+
+        result = run_r1_rs1c(
+            args.output,
+            rs0_summary=args.rs0_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R1RS1CConfig(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs2-c0":
+        from .r1_rs2 import R1RS2C0Config, run_r1_rs2_c0
+
+        result = run_r1_rs2_c0(
+            args.output,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R1RS2C0Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs2":
+        from .r1_rs2_formal import R1RS2FormalConfig, run_r1_rs2_formal
+
+        result = run_r1_rs2_formal(
+            args.output,
+            rs2_c0_summary=args.rs2_c0_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R1RS2FormalConfig(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs2a":
+        from .r1_rs2a import R1RS2AConfig, run_r1_rs2a
+
+        result = run_r1_rs2a(
+            args.output,
+            rs2_formal_summary=args.rs2_formal_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R1RS2AConfig(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs2b":
+        from .r1_rs2b import R1RS2BConfig, run_r1_rs2b
+
+        result = run_r1_rs2b(
+            args.output,
+            rs2a_summary=args.rs2a_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R1RS2BConfig(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs3a":
+        from .r1_rs3a import R1RS3AConfig, run_r1_rs3a
+
+        result = run_r1_rs3a(
+            args.output,
+            rs2b_summary=args.rs2b_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R1RS3AConfig(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs3a1":
+        from .r1_rs3a1 import R1RS3A1Config, run_r1_rs3a1
+
+        result = run_r1_rs3a1(
+            args.output,
+            rs3a_summary=args.rs3a_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R1RS3A1Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs4a":
+        from .r1_rs4a import R1RS4AConfig, run_r1_rs4a
+
+        result = run_r1_rs4a(
+            args.output,
+            rs3a1_summary=args.rs3a1_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R1RS4AConfig(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r1-rs5a":
+        from .r1_rs5a import R1RS5AConfig, run_r1_rs5a
+
+        result = run_r1_rs5a(
+            args.output,
+            rs4a_summary=args.rs4a_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R1RS5AConfig(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r3-v7a":
+        from .r3_v7a import R3V7AConfig, run_r3_v7a
+
+        result = run_r3_v7a(
+            args.output,
+            rs5a_summary=args.rs5a_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R3V7AConfig(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r3-v7b":
+        from .r3_v7b import R3V7BConfig, run_r3_v7b
+
+        result = run_r3_v7b(
+            args.output,
+            v7a_summary=args.v7a_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R3V7BConfig(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r3-v7b1":
+        from .r3_v7b1 import R3V7B1Config, run_r3_v7b1
+
+        result = run_r3_v7b1(
+            args.output,
+            v7b_summary=args.v7b_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R3V7B1Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r3-v7b2":
+        from .r3_v7b2 import R3V7B2Config, run_r3_v7b2
+
+        result = run_r3_v7b2(
+            args.output,
+            v7b1_summary=args.v7b1_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R3V7B2Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r3-v7b3":
+        from .r3_v7b3 import R3V7B3Config, run_r3_v7b3
+
+        result = run_r3_v7b3(
+            args.output,
+            v7b2_summary=args.v7b2_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R3V7B3Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r3-v7c":
+        from .r3_v7c import R3V7CConfig, run_r3_v7c
+
+        result = run_r3_v7c(
+            args.output,
+            v7b3_summary=args.v7b3_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R3V7CConfig(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r3-v7c1":
+        from .r3_v7c1 import R3V7C1Config, run_r3_v7c1
+
+        result = run_r3_v7c1(
+            args.output,
+            v7c_summary=args.v7c_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R3V7C1Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r3-v7c2":
+        from .r3_v7c2 import R3V7C2Config, run_r3_v7c2
+
+        result = run_r3_v7c2(
+            args.output,
+            v7c1_summary=args.v7c1_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R3V7C2Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r3-v7c3":
+        from .r3_v7c3 import R3V7C3Config, run_r3_v7c3
+
+        result = run_r3_v7c3(
+            args.output,
+            v7c2_summary=args.v7c2_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R3V7C3Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r3-v7c4":
+        from .r3_v7c4 import R3V7C4Config, run_r3_v7c4
+
+        result = run_r3_v7c4(
+            args.output,
+            v7c3_summary=args.v7c3_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R3V7C4Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r3-v7c5":
+        from .r3_v7c5 import R3V7C5Config, run_r3_v7c5
+
+        result = run_r3_v7c5(
+            args.output,
+            v7c4_summary=args.v7c4_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R3V7C5Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r3-v7d":
+        from .r3_v7d import R3V7DConfig, run_r3_v7d
+
+        result = run_r3_v7d(
+            args.output,
+            v7c5_summary=args.v7c5_summary,
+            rs1a5_summary=args.rs1a5_summary,
+            config=R3V7DConfig(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r4-i0":
+        from .r4_i0 import R4I0Config, run_r4_i0
+
+        result = run_r4_i0(args.output, config=R4I0Config())
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r4-i1":
+        from .r4_i1 import run_r4_i1
+
+        result = run_r4_i1(args.output, i0_summary=args.i0_summary)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r4-c0":
+        from .r4_c0 import R4C0Config, run_r4_c0
+
+        result = run_r4_c0(
+            args.output,
+            i0_summary=args.i0_summary,
+            i1_summary=args.i1_summary,
+            config=R4C0Config(),
+            smoke=bool(args.smoke),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r4-c1":
+        from .r4_c1 import run_r4_c1
+
+        result = run_r4_c1(
+            args.output,
+            i0_summary=args.i0_summary,
+            i1_summary=args.i1_summary,
+            c0_summary=args.c0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r4-c2":
+        from .r4_c2 import run_r4_c2
+
+        result = run_r4_c2(
+            args.output,
+            i0_summary=args.i0_summary,
+            i1_summary=args.i1_summary,
+            c1_summary=args.c1_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r5-i0":
+        from .r5_i0 import run_r5_i0
+
+        result = run_r5_i0(args.output, mechanism=args.mechanism)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r5-i0-selfstress":
+        from .r5_i0_selfstress import run_r5_i0_selfstress
+
+        result = run_r5_i0_selfstress(args.output)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r5-i1-selfstress":
+        from .r5_i1_selfstress import run_r5_i1_selfstress
+
+        result = run_r5_i1_selfstress(args.output, i0_summary=args.i0_summary)
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "r5-d0-preflight":
+        from .r5_d0_preflight import run_r5_d0_preflight
+
+        result = run_r5_d0_preflight(args.output, i1_summary=args.i1_summary)
         print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
         return
     if args.command == "r1-rs1a4":

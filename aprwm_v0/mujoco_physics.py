@@ -137,13 +137,13 @@ def _install_robosuite_mujoco311_compat(module: Any) -> None:
 
 
 def _install_renderer_stubs() -> None:
+    # Keep classic GL stubs. Do not stub mujoco.egl / mujoco.osmesa: V7D
+    # (and any camera_obs path) needs the real offscreen backends.
     for name in (
         "mujoco.rendering",
         "mujoco.rendering.classic",
         "mujoco.rendering.classic.renderer",
         "mujoco.rendering.classic.gl_context",
-        "mujoco.egl",
-        "mujoco.osmesa",
     ):
         if name in sys.modules:
             continue
@@ -154,6 +154,34 @@ def _install_renderer_stubs() -> None:
 
         stub.__getattr__ = _fail  # type: ignore[attr-defined]
         sys.modules[name] = stub
+
+
+def _install_render_api(module: Any) -> None:
+    """Expose MuJoCo C render types (MjrContext, …) without classic OpenGL."""
+    if getattr(module, "_aprwm_render_api", False):
+        return
+    import mujoco._render as render
+
+    for name in dir(render):
+        if name.startswith("_"):
+            continue
+        setattr(module, name, getattr(render, name))
+    module._aprwm_render_api = True
+
+
+def prepare_offscreen_gl() -> None:
+    """Select a headless GL backend before robosuite first import."""
+    import os
+
+    if not os.environ.get("MUJOCO_GL"):
+        os.environ["MUJOCO_GL"] = "egl"
+    for name in ("mujoco.egl", "mujoco.osmesa"):
+        stub = sys.modules.get(name)
+        if stub is not None and getattr(stub, "__file__", None) is None:
+            sys.modules.pop(name, None)
+    existing = sys.modules.get("mujoco")
+    if existing is not None and hasattr(existing, "MjModel"):
+        _install_render_api(existing)
 
 
 def import_mujoco(*, register: bool = False) -> Any:

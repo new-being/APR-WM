@@ -42,22 +42,38 @@ class DoorModeABackend:
         damping: float,
         seed: int,
         alpha: float | None = None,
+        include_rgb: bool = False,
     ):
         self.regime = regime
         self.friction = float(friction)
         self.damping = float(damping)
         self.alpha = float(REGIME_ALPHA[regime] if alpha is None else alpha)
         self.use_latch = regime == "C2-latch"
-        import_mujoco(register=True)
-        import robosuite as suite
+        from .mujoco_physics import import_mujoco, prepare_offscreen_gl
 
+        if include_rgb:
+            prepare_offscreen_gl()
         self.mujoco = import_mujoco(register=True)
+        if include_rgb:
+            prepare_offscreen_gl()
+        import robosuite as suite
+        rgb_kwargs = (
+            {
+                "has_offscreen_renderer": True,
+                "use_camera_obs": True,
+                "camera_names": "agentview",
+                "camera_heights": 32,
+                "camera_widths": 32,
+                "camera_depths": False,
+            }
+            if include_rgb
+            else {"has_offscreen_renderer": False, "use_camera_obs": False}
+        )
         self.env = suite.make(
             "Door",
             robots="Panda",
             has_renderer=False,
-            has_offscreen_renderer=False,
-            use_camera_obs=False,
+            **rgb_kwargs,
             control_freq=20,
             ignore_done=True,
             use_latch=self.use_latch,
@@ -116,6 +132,28 @@ class DoorModeABackend:
         if hasattr(self.data, "ctrl"):
             self.data.ctrl[:] = 0.0
         self.mujoco.mj_forward(self.model, self.data)
+
+    def rgb_frame(self) -> np.ndarray:
+        from .r1_rs2 import RGB_CAMERA, RGB_RES, normalize_rgb
+
+        if hasattr(self.env, "_update_observables"):
+            self.env._update_observables(force=True)
+        obs = self.env._get_observations(force_update=True) if hasattr(self.env, "_get_observations") else {}
+        image = obs.get(f"{RGB_CAMERA}_image") if isinstance(obs, dict) else None
+        if image is None:
+            return np.zeros((RGB_RES, RGB_RES, 3), dtype=np.float32)
+        return normalize_rgb(image)
+
+    def rgb_along_trace(self, q: np.ndarray, velocity: np.ndarray) -> np.ndarray:
+        frames = []
+        for qi, vi in zip(np.asarray(q, dtype=np.float64), np.asarray(velocity, dtype=np.float64), strict=False):
+            self.set_state(float(qi), float(vi))
+            frames.append(self.rgb_frame())
+        if not frames:
+            from .r1_rs2 import RGB_RES
+
+            return np.zeros((0, RGB_RES, RGB_RES, 3), dtype=np.float32)
+        return np.stack(frames, axis=0)
 
     def _learner_residual(self, torque_command: float) -> float:
         """Residual using only commanded torque as known control (no hidden)."""
