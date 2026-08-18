@@ -34,10 +34,20 @@ but the price of safety need not be justified by expected task utility.}
 }
 \]
 
+\[
+\boxed{
+\text{safety effectiveness}
+\neq
+\text{expected utility optimality}
+}
+\]
+
 R9-B1-P0: periodic \(M=2\) revalidation is safety-effective
 (harmful \(15\to 3\), repeat \(=0\)) and not economically worthwhile
-on this margin (invalid `after_probe` NetVoI periodic \(<\) never).
+on this margin (invalid `after_probe` NetVoI
+\(-0.97\times10^{-3}\to -5.88\times10^{-3}\)).
 That split is a **constrained-control** question later, not a reason
+to retune \(M\) or to call the certificate mechanism wrong.
 to retune \(M\).
 
 ## Ledger
@@ -62,6 +72,7 @@ to retune \(M\).
 
 ## Next
 
-Not another toy epistemic policy. **R10**: real-physics **shadow**
-validation. No autonomous revision; the certificate must not command
-high-risk motion until the lifecycle survives hardware.
+Not another toy epistemic policy. **R10-C0 = locked/deferred.**
+**SIM-X = STOP after X3** (`REPORT/REP/SIMX/SIMX_FAMILY_STOP.md`).
+**REAL-LOG-A0 = A0-LIMITED** (`REPORT/REP/REALLOG/REALLOG_A0_REPORT.md`).
+R10-C0 locked/deferred. No third simulator family.

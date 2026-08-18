@@ -1378,6 +1378,43 @@ R8 同幕 family **STOP**（`REPORT/REP/R8/R8_SAME_HORIZON_STOP.md`）。
 冻结周期再验证。G-stale 过（repeat \(=0\)）；stay NetVoI 为正；invalid
 上 periodic \(<\) never（多付 \(C_{\mathrm{cal}}\)）。不扫 \(M\)。
 **R9 toy-family STOP**（`REPORT/REP/R9/R9_TOY_FAMILY_STOP.md`）。
-**R10**（`REPORT/REG/R10/R10_PREREG.md`）：真实物理 **shadow** validation。
-不自主 revision。第一门 R10-C0 在无真实残差日志时锁定。
-更长程的 realism 问题变成：真实操作分布下，R9 的哪一条边界还活着。
+**R10-C0 = locked/deferred**（`REPORT/REG/R10/R10_PREREG.md`）：无真机则不能跑；
+仿真≠ real physics。标准不降。
+**SIM-X = active auxiliary**（`REPORT/REG/SIMX/SIMX_PREREG.md`）：最多
+cross-engine mechanism robustness。两本账不得混账。
+**SIM-X0 `PASS`**（`REPORT/REP/SIMX/SIMX0_REPORT.md`）：host `simx_hinge.v1`，
+仅 `qfrc_applied`，max \(\mathrm{NRMSE}_{\tau}\sim 10^{-16}\)。
+**SIM-X1 `PASS`**（`REPORT/REP/SIMX/SIMX1_REPORT.md`）：
+\(b_{\mathrm{true}}\in\{0.05,0.10,0.15\}\)，\(b_{\mathrm{learner}}=0.10\) 冻结；
+\(r=-\Delta b\dot q\)；G0–G3 全过。
+**SIM-X2 `PASS`**（`REPORT/REP/SIMX/SIMX2_REPORT.md`）：
+\(\sigma_{\mathrm{obs}}=0.01\) synthetic；analytic \(I_a\)；
+\(I_{\mathrm{cons}}=0.0039\), \(I_{\mathrm{info}}=0.265\) bit/sample；
+iso-energy 也过。可写 MuJoCo 上 action-conditioned observability 与
+policy-induced blindness **instance**；仍只是 cross-engine。
+**SIM-X3 `FAIL`**（`REPORT/REP/SIMX/SIMX3_REPORT.md`）：pattern
+`false_revoke`；G1 \(P(F_{\mathrm{revoke}})=0.045\)；G4 high_f 在 4s 内仍常
+revoke（accumulation recovers）。
+**SIM-X family STOP**（`REPORT/REP/SIMX/SIMX_FAMILY_STOP.md`）：支持
+cross-engine action-conditioned observability 与 policy-dependent
+evidence rate；**不**支持 stale-license lifecycle blindness。
+边界语言：
+
+\[
+\textbf{policy-induced epistemic attenuation}
+\succ
+\textbf{policy-induced epistemic closure}.
+\]
+
+不开 dwell rescue。不解锁 R10。H1 CAD0 **deferred**。
+**REAL-LOG-A0 `A0-LIMITED`**（`REPORT/REP/REALLOG/REALLOG_A0_REPORT.md`）：
+官方 DROID RLDS 无 torque；AgiBot effort/wrench 文档写明 unavailable；
+无 current→torque 标定。不开 REAL-LOG-A1 force residual。边界：缺的是
+**数据源/硬件**，不是第三个仿真 family。
+**论文级收束**（`REPORT/REP/PAPER/APRWM_R7_R9_SIMX_SYNTHESIS.md`）：
+核心句 = policy 改变 WM 自证假设的 **rate**；边界句 = attenuation
+cross-engine robust，persistent closure **not established**；
+real-physics **explicitly unmade**。
+**VIS-X**（`REPORT/REG/VISX/VISX_PREREG.md`）：不换大数据集；在
+`simx_hinge` 上加 camera 自生成 \((RGB,D,\mathrm{seg})\)。
+**VIS-X0–X3 PASS** + **VIS-EXT0 PASS** + **CAP-X0 PASS**；**CAP-X1 prereg FROZEN**（`REPORT/REG/CAPX/CAPX1_PREREG.md`：\(\rho=0\)，\(\mu=0\)，\(H_{\mathrm{pure/hybrid}}\) 网格，matched = one-step∩rollout∩planning，主统计 \(R_P(0)\)）。**未开 sweep。** R10 锁定。

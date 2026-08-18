@@ -1303,6 +1303,131 @@ def build_parser() -> argparse.ArgumentParser:
         default="runs/r7_b0/formal/summary.json",
     )
 
+    sim_x0_parser = subparsers.add_parser(
+        "sim-x0",
+        help="SIM-X0 nominal MuJoCo force accounting (not R10-C0)",
+    )
+    sim_x0_parser.add_argument("--output", default="runs/sim_x0/formal")
+    sim_x0_parser.add_argument("--duration", type=float, default=10.0)
+
+    sim_x1_parser = subparsers.add_parser(
+        "sim-x1",
+        help="SIM-X1 oracle damping mismatch on simx_hinge.v1 (not R10-C0)",
+    )
+    sim_x1_parser.add_argument("--output", default="runs/sim_x1/formal")
+    sim_x1_parser.add_argument("--duration", type=float, default=10.0)
+    sim_x1_parser.add_argument(
+        "--x0-summary",
+        default="runs/sim_x0/formal/summary.json",
+    )
+
+    sim_x2_parser = subparsers.add_parser(
+        "sim-x2",
+        help="SIM-X2 action-conditioned validity information channel (not R10)",
+    )
+    sim_x2_parser.add_argument("--output", default="runs/sim_x2/formal")
+    sim_x2_parser.add_argument("--duration", type=float, default=10.0)
+    sim_x2_parser.add_argument(
+        "--x1-summary",
+        default="runs/sim_x1/formal/summary.json",
+    )
+
+    sim_x3_parser = subparsers.add_parser(
+        "sim-x3",
+        help="SIM-X3 persistent validity lifecycle (not R10)",
+    )
+    sim_x3_parser.add_argument("--output", default="runs/sim_x3/formal")
+    sim_x3_parser.add_argument(
+        "--x2-summary",
+        default="runs/sim_x2/formal/summary.json",
+    )
+    sim_x3_parser.add_argument("--noise-seeds", type=int, default=100)
+
+    vis_x0_parser = subparsers.add_parser(
+        "vis-x0",
+        help="VIS-X0 GT seg+depth state interface smoke (not R10)",
+    )
+    vis_x0_parser.add_argument("--output", default="runs/vis_x0/formal")
+    vis_x0_parser.add_argument("--duration", type=float, default=4.0)
+
+    vis_x1_parser = subparsers.add_parser(
+        "vis-x1",
+        help="VIS-X1 RGB-D perception pseudo-residual (not R10)",
+    )
+    vis_x1_parser.add_argument("--output", default="runs/vis_x1/formal")
+    vis_x1_parser.add_argument("--duration", type=float, default=4.0)
+    vis_x1_parser.add_argument(
+        "--x0-summary",
+        default="runs/vis_x0/formal/summary.json",
+    )
+
+    vis_x2_parser = subparsers.add_parser(
+        "vis-x2",
+        help="VIS-X2 perception→false physics diagnosis (not R10)",
+    )
+    vis_x2_parser.add_argument("--output", default="runs/vis_x2/formal")
+    vis_x2_parser.add_argument("--duration", type=float, default=2.0)
+    vis_x2_parser.add_argument(
+        "--x1-summary",
+        default="runs/vis_x1/formal/summary.json",
+    )
+
+    vis_x3_parser = subparsers.add_parser(
+        "vis-x3",
+        help="VIS-X3 perception uncertainty→physics-attribution veto (not R10)",
+    )
+    vis_x3_parser.add_argument("--output", default="runs/vis_x3/formal")
+    vis_x3_parser.add_argument("--duration", type=float, default=2.0)
+    vis_x3_parser.add_argument(
+        "--x2-summary",
+        default="runs/vis_x2/formal/summary.json",
+    )
+
+    vis_ext0_parser = subparsers.add_parser(
+        "vis-ext0",
+        help="VIS-EXT0 robosuite Door visual external-validity bridge (not R10)",
+    )
+    vis_ext0_parser.add_argument("--output", default="runs/vis_ext0/formal")
+    vis_ext0_parser.add_argument("--duration", type=float, default=1.0)
+    vis_ext0_parser.add_argument(
+        "--x3-summary",
+        default="runs/vis_x3/formal/summary.json",
+    )
+
+    cap_x0_parser = subparsers.add_parser(
+        "cap-x0",
+        help="CAP-X0 arm3 benchmark/accounting (not capacity claim, not R10)",
+    )
+    cap_x0_parser.add_argument("--output", default="runs/cap_x0/formal")
+    cap_x0_parser.add_argument("--duration", type=float, default=2.0)
+    cap_x0_parser.add_argument("--train-scenes", type=int, default=128)
+    cap_x0_parser.add_argument("--val-scenes", type=int, default=32)
+    cap_x0_parser.add_argument("--test-scenes", type=int, default=64)
+    cap_x0_parser.add_argument("--traj-per-scene", type=int, default=8)
+
+    cap_x1_parser = subparsers.add_parser(
+        "cap-x1",
+        help="CAP-X1 matched-family capacity R_P(0) (rho=0, mu=0; not R10)",
+    )
+    cap_x1_parser.add_argument("--output", default="runs/cap_x1/formal")
+    cap_x1_parser.add_argument("--x0-data", default="runs/cap_x0/formal")
+    cap_x1_parser.add_argument("--plan-tasks", type=int, default=8)
+    cap_x1_parser.add_argument("--rollout-episodes", type=int, default=32)
+
+    cap_x2_p0_parser = subparsers.add_parser(
+        "cap-x2-p0",
+        help="CAP-X2-P0 oracle planning harness lock (before rho capacity sweep)",
+    )
+    cap_x2_p0_parser.add_argument("--output", default="runs/cap_x2/p0")
+    cap_x2_p0_parser.add_argument("--n-tasks", type=int, default=24)
+
+    cap_x2_parser = subparsers.add_parser(
+        "cap-x2",
+        help="CAP-X2 R_P(rho) capacity decay (requires P0 freeze; not R10)",
+    )
+    cap_x2_parser.add_argument("--output", default="runs/cap_x2/formal")
+    cap_x2_parser.add_argument("--p0-dir", default="runs/cap_x2/p0")
+
     r10_c0_parser = subparsers.add_parser(
         "r10-c0",
         help="R10-C0 real sensor-chain C0 (locked without hardware log)",
@@ -2176,6 +2301,140 @@ def main(argv: list[str] | None = None) -> None:
             a0_summary=args.a0_summary,
             p0_summary=args.p0_summary,
             b0_summary=args.b0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "sim-x0":
+        from .sim_x0 import SIMX0Config, run_sim_x0
+
+        result = run_sim_x0(
+            args.output,
+            config=SIMX0Config(duration_s=args.duration),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "sim-x1":
+        from .sim_x1 import SIMX1Config, run_sim_x1
+
+        result = run_sim_x1(
+            args.output,
+            config=SIMX1Config(duration_s=args.duration),
+            x0_summary=args.x0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "sim-x2":
+        from .sim_x2 import SIMX2Config, run_sim_x2
+
+        result = run_sim_x2(
+            args.output,
+            config=SIMX2Config(duration_s=args.duration),
+            x1_summary=args.x1_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "sim-x3":
+        from .sim_x3 import SIMX3Config, run_sim_x3
+
+        result = run_sim_x3(
+            args.output,
+            config=SIMX3Config(n_noise_seeds=args.noise_seeds),
+            x2_summary=args.x2_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "vis-x0":
+        from .vis_x0 import VISX0Config, run_vis_x0
+
+        result = run_vis_x0(
+            args.output,
+            config=VISX0Config(duration_s=args.duration),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "vis-x1":
+        from .vis_x1 import VISX1Config, run_vis_x1
+
+        result = run_vis_x1(
+            args.output,
+            config=VISX1Config(duration_s=args.duration),
+            x0_summary=args.x0_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "vis-x2":
+        from .vis_x2 import VISX2Config, run_vis_x2
+
+        result = run_vis_x2(
+            args.output,
+            config=VISX2Config(duration_s=args.duration),
+            x1_summary=args.x1_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "vis-x3":
+        from .vis_x3 import VISX3Config, run_vis_x3
+
+        result = run_vis_x3(
+            args.output,
+            config=VISX3Config(duration_s=args.duration),
+            x2_summary=args.x2_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "vis-ext0":
+        from .vis_ext0 import VISEXT0Config, run_vis_ext0
+
+        result = run_vis_ext0(
+            args.output,
+            config=VISEXT0Config(duration_s=args.duration),
+            x3_summary=args.x3_summary,
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "cap-x0":
+        from .cap_x0 import CAPX0Config, run_cap_x0
+
+        result = run_cap_x0(
+            args.output,
+            config=CAPX0Config(
+                duration_s=args.duration,
+                n_train_scenes=args.train_scenes,
+                n_val_scenes=args.val_scenes,
+                n_test_scenes=args.test_scenes,
+                traj_per_scene=args.traj_per_scene,
+            ),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "cap-x1":
+        from .cap_x1 import CAPX1Config, run_cap_x1
+
+        result = run_cap_x1(
+            args.output,
+            config=CAPX1Config(
+                x0_data=args.x0_data,
+                plan_tasks=args.plan_tasks,
+                rollout_episodes=args.rollout_episodes,
+            ),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "cap-x2-p0":
+        from .cap_x2_p0 import CAPX2P0Config, run_cap_x2_p0
+
+        result = run_cap_x2_p0(
+            args.output,
+            config=CAPX2P0Config(n_tasks=args.n_tasks),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "cap-x2":
+        from .cap_x2 import CAPX2Config, run_cap_x2
+
+        result = run_cap_x2(
+            args.output,
+            config=CAPX2Config(p0_dir=args.p0_dir),
         )
         print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
         return

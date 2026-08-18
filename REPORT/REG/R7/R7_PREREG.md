@@ -1,7 +1,7 @@
 # R7 Preregistration — Switch Certification
 
 Date: 2026-08-17  
-Status: **P0 PASS**; A-series **FROZEN**; **R7-P1 `PASS=true`**; **R7-B0 `GO=true`** (WM frozen); **R7-B1 `shift_valid=false`**; **R8 same-horizon STOP**; **R8-R0 `PASS=false`**; **R9 toy-family STOP**; **R9-B1-P0 `PASS=false`**; **R10-C0 LOCKED** (no real residual log)  
+Status: **P0 PASS**; A-series **FROZEN**; **R7-P1 `PASS=true`**; **R7-B0 `GO=true`** (WM frozen); **R7-B1 `shift_valid=false`**; **R8 same-horizon STOP**; **R8-R0 `PASS=false`**; **R9 toy-family STOP**; **R9-B1-P0 `PASS=false`**; **R10-C0 LOCKED**; **VIS-X0–X3 / VIS-EXT0 PASS**; **CAP-X0 PASS** (capacity host)
 Depends on: `REPORT/REP/R6/R6_REALIZATION_FREEZE.md`,
 `REPORT/REP/R7/R7_P0_REPORT.md`  
 Does not reopen: R5 self-stress \(\lambda\); R6-C0; \(z_{\min}\) sweep  

@@ -5815,5 +5815,308 @@ Held：coverage \(0.90\)；commit 5/5 均为 useful（precision=1，recall=1）�
 
 **R9 toy-family STOP。不进入 adaptive B1。**
 
-三条冻结结论：信息可摊销；寿命一般不能从正常运行推断（policy-induced epistemic blindness）；有限证书年龄能买安全，但不一定被任务效用证明。B1-P0 的 NetVoI 失败不要改写成 constrained-control 成功。下一阶段 R10：真实物理 shadow，证书不驱动高风险动作。第一门 R10-C0 无真实残差日志则锁定（仿真 MJ0/RS0 不算过门）。
-报告：`REPORT/REP/R9/R9_TOY_FAMILY_STOP.md`、`REPORT/REG/R10/R10_PREREG.md`。
+三条冻结结论：信息可摊销；寿命一般不能从正常运行推断（policy-induced epistemic blindness）；有限证书年龄能买安全，但不一定被任务效用证明。B1-P0 的 NetVoI 失败不要改写成 constrained-control 成功。
+**R10-C0 = locked/deferred**；**SIM-X = active auxiliary**（不得与 R10 混账）。
+报告：`REPORT/REP/R9/R9_TOY_FAMILY_STOP.md`、`REPORT/REG/SIMX/SIMX_PREREG.md`。
+
+---
+
+**Cursor**
+
+**SIM-X0 `PASS`。不解锁 R10-C0。**
+
+Host plant `simx_hinge.v1`（`aprwm_v0/simx_plant.py`）：1-DoF 竖轴 hinge，
+仅 `qfrc_applied`，XML damping \(=0.10\) 与 `NominalPassiveParams` 一致，
+无接触/限位/actuator。9-cell max \(\mathrm{NRMSE}_{\tau}=9.56\times 10^{-17}\)。
+首轮失败（\(\sim 1.8\times 10^{-3}\)）按 atlas 定位为 **passive/timing**：
+`mj_step` 后 `qacc`/`qfrc_*` 仍属步进前力评估，post-step \(\dot q\) 不能喂
+nominal damping。修复写入 `qvel_for_passive` 与
+`REPORT/REG/SIMX/SIMX0_FORCE_ACCOUNTING.md`。产物：`runs/sim_x0/formal/`。
+报告：`REPORT/REP/SIMX/SIMX0_REPORT.md`。下一步：在**同一 host** 上定义
+SIM-X1 oracle mismatch；X2–X3 仍锁。
+
+---
+
+**Cursor**
+
+**SIM-X1 `PASS`。不解锁 R10-C0。只解锁 X2。**
+
+窄 damping oracle mismatch：`true_plant.damping∈{0.05,0.10,0.15}`，
+`learner_nominal.damping=0.10` 永不跟随 plant。27-cell。
+G0 max NRMSE nominal \(9.56\times10^{-17}\)；G1 max \(E_{\mathrm{oracle}}\)
+\(8.18\times10^{-16}\)；G2 max \(s\)-rel \(5.55\times10^{-16}\)；G3 max
+\(c\)-rel \(1.58\times10^{-16}\)。可写 \(r=-\Delta b\dot q\) 在 MuJoCo host
+上成立；不可写 validity / blindness / action ranking。
+产物：`runs/sim_x1/formal/`。报告：`REPORT/REP/SIMX/SIMX1_REPORT.md`。
+下一步：**SIM-X2**（同 host / 同 damping family 上 \(I(\mathcal V;Y\mid a)\)）。
+
+---
+
+**Cursor**
+
+**SIM-X2 `PASS`。不解锁 R10-C0。只解锁 X3。**
+
+\(\sigma_{\mathrm{obs}}=0.01\) synthetic observation-resolution surrogate；
+解析 per-step MI（非 KNN）。\(I_{\mathrm{cons}}=0.00392\),
+\(I_{\mathrm{info}}=0.265\) bit/sample；gap \(0.261>0.20\)。
+iso-energy：\(E_v\) 与 \(I\) 同序（low-f ≫ high-f）。G0–G4 全过。
+允许写：MuJoCo 上 action-conditioned validity observability；以及
+policy-induced epistemic blindness 的 **simulator instance**。
+仍只是 cross-engine mechanism robustness。
+产物：`runs/sim_x2/formal/`。报告：`REPORT/REP/SIMX/SIMX2_REPORT.md`。
+下一步：**SIM-X3**（channel → lifecycle），不把积累问题塞回 X2。
+
+---
+
+**Cursor**
+
+**SIM-X3 `FAIL`。pattern=`false_revoke`。不解锁 R10。不改门。**
+
+3600-cell：canonical \(b(\mathcal V)=0.95\)；三假设 Bayes；\(\sigma=0.01\)。
+G0/G2/G3 过；G1 败（\(P(F_{\mathrm{revoke}})=0.045\)，多为短暂跌破 0.5）；
+G4 败（high_f invalid 仅 \(1.4\%\) censored → 4s 上 accumulation recovers）。
+\(S_{\mathrm{stale}}\) 仍 info < cons < high_f。按预注册 Pattern C：先当
+updater/阈值敏感性，不把 invalid revoke 写成 lifecycle blindness。
+X2 channel 结论保留；cross-engine **lifecycle** robustness **未**建立。
+产物：`runs/sim_x3/formal/`。报告：`REPORT/REP/SIMX/SIMX3_REPORT.md`。
+
+---
+
+**Cursor**
+
+**SIM-X family STOP。不开 dwell rescue。**
+
+正式：`SIM-X3 FAIL` / `false_revoke` 保持。G1 = 瞬时阈值脆弱（stay 仍
+\(b_T\approx1\)）；G4 = 弱信息×足够样本 → 最终可识别（high_f median
+revoke \(0.95\,\mathrm{s}\)）。两失败不同；dwell 修不了 G4。
+冻结支持：cross-engine action-conditioned observability；
+policy-dependent evidence-rate ordering。
+冻结不支持：cross-engine persistent lifecycle blindness。
+R9 强弱修正：attenuation 比 closure 更稳。
+报告：`REPORT/REP/SIMX/SIMX_FAMILY_STOP.md`。R10-C0 仍 locked/deferred。
+
+---
+
+**Cursor**
+
+**REAL-LOG-A0 = A0-LIMITED。不开 force-A1。不解锁 R10。**
+
+只做 schema/provenance（不下全量、不训练）。官方 DROID RLDS：有
+\(q,u\)，无 \(\tau\)/effort；paper 也未列 torque。AgiBot：有 \(t,q,\dot q\)
+与 current 字段，但 effort/wrench **Not available for now**，无标定。
+第三方 Cosmos3-DROID torque 字段不计入官方 DROID 升级。
+结论：公开日志不够合同 residual；physics 主线瓶颈是数据源/硬件。
+报告：`REPORT/REP/REALLOG/REALLOG_A0_REPORT.md`。建议整理 R7–R9+SIM-X
+论文结论，不开第三个仿真 family。
+
+---
+
+**Cursor**
+
+**论文级总账冻结。实验链到 evidence boundary，不是 scientific no-go。**
+
+`REPORT/REP/PAPER/APRWM_R7_R9_SIMX_SYNTHESIS.md`：四层 claim→证据→边界→
+允许/禁止措辞。核心机制句：policy 改变 WM 校验自身假设的 **rate**。
+边界句：attenuation 跨引擎成立；persistent closure 未建立。
+real-physics claim explicitly unmade。下一步写论文/报告，不新开实验格。
+
+---
+
+**Cursor**
+
+**CAP-X1 prereg FROZEN。** `REPORT/REG/CAPX/CAPX1_PREREG.md`：
+\(\rho=0\)；\(\mu=0\)（槽位保留、值冻结）；
+\(H_{\mathrm{pure}}\in\{8,\ldots,256\}\)；
+\(H_{\mathrm{hybrid}}\in\{0,\ldots,256\}\)（0=Physics-only）；
+reference=PureNN \(H=256\) **X1 fresh**（不用 X0 的 0.101）；
+matched = \(E_1\)∩rollout∩planning；CEM budget 统一；主统计 \(R_P(0)\)；
+compute = \(P\)+MACs+full-model latency+CEM wall-clock。
+**禁止在开写前跑任何 width。**
+
+```text
+CAP-X0 = PASS
+CAP-X1 = FROZEN prereg (sweep not started)
+CAP-X2 = LOCKED
+R10    = LOCKED
+```
+
+---
+
+**Cursor**
+
+**CAP-X0 PASS。** host=`capx_arm3.v1`（3-DoF）；128/32/64 scenes；
+oracle \(\mathrm{NRMSE}\sim10^{-15}\)；PureNN \(H{=}256\) val NRMSE=0.101；
+**无** \(R_P\) claim。报告：`REPORT/REP/CAPX/CAPX0_REPORT.md`。
+下一格：**CAP-X1 prereg**（先冻门再扫容量）。R10 锁定。
+
+```text
+CAP-X0 = PASS
+CAP-X1 = NEXT (prereg)
+R10    = LOCKED
+```
+
+---
+
+**Cursor**
+
+**VIS-EXT0 PASS / attribution_external_validity。** robosuite Door+Panda；
+只抬视觉；hinge 1-DoF；冻结人工首帧 box/click + classical depth-flood
+（SAM2 未装）；Door 重校准 \(\theta=0.260\)、\(\tau_U=0.0415\)；
+\(FPR_{\mathrm{alarm}}^{\mathrm{visual}}=0.241\)、
+\(FPR_{\mathrm{phyclaim}}^{\mathrm{visual}}=0.086\)；
+clean-mismatch \(TPR_{\mathrm{phyclaim}}=0.284\)。报告：
+`REPORT/REP/VISX/VISEXT0_REPORT.md`。RoboCasa 可选；R10 锁定。
+
+```text
+VIS-X0–X3 = PASS
+VIS-EXT0  = PASS
+RoboCasa  = OPTIONAL next
+R10       = LOCKED
+```
+
+---
+
+**Cursor**
+
+**VIS-EXT0 对齐冻结。** 不上 RoboCasa。robosuite `Door`+Panda：只抬视觉
+（texture/light、camera、occlusion、combined）；door hinge 1-DoF；Panda 不接触门；
+RGB-D + 冻结 SAM2 式首帧人工 prompt；GT seg 仅评估；保留 \(U_t\)/归因语义；
+**重算** \(\theta/\tau_U\)（同校准规则，不抄 VIS-X3 数字）。门 G0–G4。
+合同：`REPORT/REG/VISX/VISEXT0_PREREG.md`。实现等明确「开写/开始」后再动。
+
+```text
+VIS-X0–X3 = PASS
+VIS-EXT0  = NEXT
+RoboCasa  = LOCKED pending EXT0
+R10       = LOCKED
+```
+
+---
+
+**Cursor**
+
+**VIS-X3 PASS / attribution_success。** 冻结 X2 \(\theta\)；\(U_t=\mathrm{SE}(\hat{\dot q})\)；
+\(FPR_{phyclaim}^{perc}=0\)，\(TPR_{phyclaim}=0.284\)；degraded 下 \(P(D=1)=0.92\)。
+报告：`REPORT/REP/VISX/VISX3_REPORT.md`。VIS 弧闭合；R10 仍锁定。
+
+```text
+VIS-X0 = PASS
+VIS-X1 = PASS
+VIS-X2 = PASS
+VIS-X3 = PASS
+R10    = LOCKED
+```
+
+---
+
+**Cursor**
+
+**VIS-X3 对齐冻结。** 不问更好视觉、不重调 X2 \(W/\theta\)。
+核心：learner-visible \(U_t=\mathrm{SE}(\hat{\dot q})\) 能否阻止
+observation inadequacy 被错归因为 model inadequacy。
+语义：**veto physics attribution**（\(C^{phy}=A\land\neg D\)），
+不是删掉 residual alarm；\(A=1,D=1\) ≠ physics OK。
+主门 G3：\(FPR_{phyclaim}^{perc}\le0.5\,FPR_{perc}^{X2}=0.0338\)；
+G4：\(TPR_{phyclaim}\ge0.227\)。合同：`REPORT/REG/VISX/VISX3_PREREG.md`。
+
+```text
+VIS-X0 = PASS
+VIS-X1 = PASS
+VIS-X2 = PASS
+VIS-X3 = NEXT
+R10    = LOCKED
+```
+
+---
+
+**Cursor**
+
+**VIS-X2 PASS。** \(FPR_{\mathrm{clean}}=0.005\)，\(FPR_{\mathrm{perc}}=0.068\)，
+\(TPR_{\mathrm{phy}}=0.28\)；oracle 地板完好；\(E_{\dot q}\to E_{\mathrm{pseudo}}\to P(A=1)\) 链成立。
+报告：`REPORT/REP/VISX/VISX2_REPORT.md`。解锁 **VIS-X3 only**。R10 锁定。
+
+```text
+VIS-X0 = PASS
+VIS-X1 = PASS
+VIS-X2 = PASS
+VIS-X3 = NEXT
+R10    = LOCKED
+```
+
+---
+
+**Cursor**
+
+**VIS-X2 对齐冻结。** 不问更低 \(E_q\)。核心链：
+perception error → state error → pseudo-residual → **false physics diagnosis**。
+双因素 \(P\times V\)；degraded = illumination/color、depth noise/dropout、occlusion
+（v1 不加 camera pose）；alarm = 冻结 \(S_t\) + calibration \(Q_{0.99}\)；
+禁止看 formal 后改阈值；禁止 X2 做 uncertainty veto（那是 VIS-X3）。
+合同：`REPORT/REG/VISX/VISX2_PREREG.md`。
+
+```text
+VIS-X0 = PASS   visual-state interface
+VIS-X1 = PASS   perception → pseudo-residual
+VIS-X2 = NEXT   pseudo-residual → false physics diagnosis
+VIS-X3 = LOCKED attribution / uncertainty mitigation
+R10    = LOCKED
+```
+
+---
+
+**Cursor**
+
+**VIS-X1 PASS。** RGB-D（无 GT seg）→ \(r_{\mathrm{pseudo}}\)；
+oracle NRMSE ~1e-16，max \(E_{\mathrm{pseudo}}=0.169\)；归因速度主导；
+`perception_masquerade_evidence=true`。报告：`REPORT/REP/VISX/VISX1_REPORT.md`。
+解锁 **VIS-X2 only**。R10 仍锁定。
+
+```text
+VIS-X0 = PASS
+VIS-X1 = PASS
+VIS-X2 = next
+R10    = locked
+```
+
+---
+
+**Cursor**
+
+**VIS-X1 对齐冻结。** 唯一新变量：去掉 GT segmentation。同
+`simx_hinge_vis.v1` / camera / RGB-D / PD / residual / oracle
+accounting。主诊断 \(r_{\mathrm{pseudo}}=r_{\mathrm{visual}}-r_{\mathrm{oracle}}\)；
+指标 \(E_q,E_{\dot q},E_r,E_{\mathrm{pseudo}}\) + attribution。
+\(r_{\mathrm{visual}}\neq0\) ≠ physics mismatch。合同：
+`REPORT/REG/VISX/VISX1_PREREG.md`。
+
+```text
+VIS-X0 = PASS
+VIS-X1 = next
+VIS-X2 = locked pending X1
+R10    = locked
+```
+
+---
+
+**Cursor**
+
+**VIS-X0 PASS。** `simx_hinge_vis.v1` + GT seg/depth → pivot-PCA
+\(\hat q\) → local-linear \(\hat{\dot q}\) → residual；
+`vis_x0_passed=true`；max \(q\) RMSE \(0.049\)，max visual NRMSE \(0.031\)。
+报告：`REPORT/REP/VISX/VISX0_REPORT.md`。解锁 **VIS-X1 only**。
+R10 仍锁定。
+
+---
+
+**Cursor**
+
+**VIS-X 路线冻结。首选自渲染，不找大型数据源。**
+
+在现有 `simx_hinge.v1` 动力学上加 camera → `simx_hinge_vis.v1`；
+随用随生成 \((RGB,D,\mathrm{seg},q,\dot q)\)。顺序：VIS-X0 GT
+seg+depth 接口 → VIS-X1 RGB-D + \(r_{\mathrm{pseudo}}\) → VIS-X2
+RGB-only/DR。不迁 ManiSkill/RoboCasa/RLBench 作为第一格。
+合同：`REPORT/REG/VISX/VISX_PREREG.md`、`VISX0_PREREG.md`。
+R10 仍锁定。下一可执行格：**VIS-X0**。
+
+---

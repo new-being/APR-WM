@@ -215,3 +215,48 @@ def import_mujoco(*, register: bool = False) -> Any:
         _install_renderer_stubs()
         _install_robosuite_mujoco311_compat(module)
     return module
+
+
+def import_mujoco_with_renderer() -> Any:
+    """Load the public MuJoCo package including ``Renderer`` (EGL/OSMesa).
+
+    Physics-only imports deliberately omit classic GL. VIS-X must call this
+    instead of ``import_mujoco`` before creating cameras.
+    """
+
+    import os
+
+    prepare_offscreen_gl()
+    existing = sys.modules.get("mujoco")
+    if (
+        existing is not None
+        and hasattr(existing, "Renderer")
+        and not getattr(existing, "physics_only", False)
+    ):
+        return existing
+
+    # Drop physics-only placeholder and any classic-GL stubs so public init runs.
+    for key in list(sys.modules):
+        if key == "mujoco" or key.startswith("mujoco."):
+            mod = sys.modules[key]
+            if key.startswith("mujoco.rendering") and getattr(mod, "__file__", None) is None:
+                del sys.modules[key]
+            elif key == "mujoco" and getattr(mod, "physics_only", False):
+                del sys.modules[key]
+            elif key.startswith("mujoco.") and getattr(mod, "physics_only", False):
+                del sys.modules[key]
+
+    # If physics-only root remains without Renderer, force a clean public import.
+    existing = sys.modules.get("mujoco")
+    if existing is not None and not hasattr(existing, "Renderer"):
+        for key in list(sys.modules):
+            if key == "mujoco" or key.startswith("mujoco."):
+                del sys.modules[key]
+
+    import mujoco
+
+    if not hasattr(mujoco, "Renderer"):
+        raise ImportError(
+            "mujoco.Renderer unavailable; set MUJOCO_GL=egl|osmesa for VIS-X"
+        )
+    return mujoco

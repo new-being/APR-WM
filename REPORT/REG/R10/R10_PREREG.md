@@ -1,15 +1,29 @@
 # R10 Preregistration — Real-Physics Shadow Validation
 
 Date: 2026-08-17  
-Status: **FROZEN** (family); first gate **R10-C0**  
+Status: **FROZEN** (family); first gate **R10-C0 = locked/deferred**
+(no hardware); **SIM-X = STOP after X3**; **REAL-LOG-A0 = A0-LIMITED**
+(separate ledger; not this family)  
 Depends on: `REPORT/REP/R9/R9_TOY_FAMILY_STOP.md`  
 Does not: autonomous revision; certificate-commanded high-risk motion;
-R9-C0; adaptive B1; new toy \(F_{\max}\) plant; salvage B1-P0 NetVoI
+R9-C0; adaptive B1; new toy \(F_{\max}\) plant; salvage B1-P0 NetVoI;
+treat MuJoCo / PhysX / Isaac as this family; lower C0 because SIM-X
+or REAL-LOG exists; treat public demos as residual.h5
 
-## Why now
+**Physics (two layers).** Explicit physics = structured terms *in the
+model*. R10 real physics = closed-loop dynamics of a **real
+mechanical plant** plus contracted sensors. No such plant now
+\(\Rightarrow\) **R10-C0 cannot be run.** Do not relabel simulators.
 
-R9’s remaining questions depend on the **operating distribution of a
-real system**, not on another algorithm cell of the saturated toy:
+SIM-X stop: `REPORT/REP/SIMX/SIMX_FAMILY_STOP.md`.  
+REAL-LOG-A0: `REPORT/REP/REALLOG/REALLOG_A0_REPORT.md` — public logs are
+**state-action limited**, not force-auditable; still never R10-C0.
+
+## Why R10 still exists
+
+R9’s remaining questions *eventually* depend on the **operating
+distribution of a real system**, not on another algorithm cell of the
+saturated toy:
 
 - Do task actions naturally excite validity-relevant modes?
 - Does a conservative controller induce epistemic blindness?
@@ -47,13 +61,22 @@ hardware.
    world” yet.
 
 3. **R10-C2 — Action-conditioned validity observability**  
-   For the same real shift, estimate \(p(r\mid\mathcal V,a)\). Which
-   task actions monitor validity, and which induce epistemic blindness?
+   Core question: does \(I(\mathcal V;Y\mid a)\) change materially
+   with the executed action? Same real shift, different \(a\).
+   Which motions expose validity, and which induce
+   policy-induced epistemic blindness?
 
 4. **R10-C3 — Shadow certificate lifecycle**  
    Replay / live-shadow the R9 objects (frozen where they still apply)
    and report would-be useful / harmful commits. Still no actuation
    authority.
+
+C1–C3 stay **locked pending C0**. Hardware path (when a plant exists)
+is H1 (`REPORT/REG/R10/R10_C0_H1_RIG.md`). Inertia for
+\(\tau_{\mathrm{nominal}}\) is CAD0 sensing-plane \(I_{\mathrm{CAD}}\)
+(`REPORT/REG/R10/R10_C0_H1_CAD0.md`). **Do not start CAD now.**
+
+SIM-X0–X3 are **not** R10-C0–C3. Passing SIM-X does not unlock C0.
 
 ## After C3
 

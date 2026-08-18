@@ -138,17 +138,22 @@ def generalized_force_residual(
     nominal_passive: NominalPassiveParams | np.ndarray,
     include_constraint: bool = True,
     dof_index: int | None = None,
+    qvel_for_passive: np.ndarray | None = None,
 ) -> np.ndarray:
-    """Learner residual on generalized force; excludes truth ``qfrc_passive``."""
+    """Learner residual on generalized force; excludes truth ``qfrc_passive``.
+
+    ``qvel_for_passive`` must be the velocity at which MuJoCo evaluated
+    the step's forces (pre-``mj_step``). Using post-step ``data.qvel``
+    with nonzero damping is a timing interface bug.
+    """
 
     mass = get_mass_matrix(model, data)
     qacc = _as_f64(data.qacc)
     bias = get_bias_force(data)
     known = known_control_force(data)
     constraint = get_constraint_force(data) if include_constraint else np.zeros_like(known)
-    passive = nominal_passive_force(
-        _as_f64(data.qvel), nominal_passive, dof_index=dof_index
-    )
+    qvel = _as_f64(data.qvel) if qvel_for_passive is None else _as_f64(qvel_for_passive)
+    passive = nominal_passive_force(qvel, nominal_passive, dof_index=dof_index)
     return mass @ qacc + bias - known - constraint - passive
 
 
