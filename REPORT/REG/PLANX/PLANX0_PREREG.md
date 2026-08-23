@@ -1,9 +1,8 @@
 # PLAN-X0 Preregistration — Proposal Benchmark / Teacher / Sensitivity Instrument
 
 Date: 2026-08-18  
-Status: **FROZEN**; **preregistration only** — **no dataset generation,
-teacher optimize, or FD \(h\) until explicit start**; **no proposal
-network**; **does not interrupt CAP-X2**  
+Status: **FROZEN**; **formal PASS** (`REPORT/REP/PLANX/PLANX0_REPORT.md`);
+PLAN-X1 prereg frozen (`REPORT/REG/PLANX/PLANX1_PREREG.md`)  
 Depends on: `REPORT/REG/PLANX/PLANX_PREREG.md`, host `capx_arm3.v1`  
 Does not: train \(\mu_\phi/\hat h_\phi\); compare B0–B3; CEM vs
 proposal-CEM; diffusion; \(\rho>0\) residual plant; unlock R10;
@@ -168,16 +167,9 @@ works”; diffusion; CAP \(R_P\) reinterpretation.
 ## Ledger
 
 ```text
-PLAN-X0 = FROZEN preregistration only
-          host = capx_arm3.v1 oracle
-          A in R^{60}; reachable q*
-          teacher A* from A_gen warm start
-          h = FD curvature at A*
-          gates = G0 feasibility, G1 teacher, G2 h>0, G3 diversity
-          no proposal network
-
-PLAN-X1 = LOCKED pending X0 PASS
-CAP-X2  = do not touch
+PLAN-X0 = PASS  report = REPORT/REP/PLANX/PLANX0_REPORT.md
+PLAN-X1 = FROZEN prereg (REPORT/REG/PLANX/PLANX1_PREREG.md)
+CAP-X2  = PASS pattern D (orthogonal; do not reopen)
 R10     = LOCKED
 ```
 

@@ -1,9 +1,11 @@
 # PLAN-X Preregistration — Sensitivity-Aware Learned Action Proposal
 
 Date: 2026-08-18  
-Status: **FROZEN** (family); **PLAN-X0 prereg FROZEN**
-(`REPORT/REG/PLANX/PLANX0_PREREG.md`); **PLAN-X1 not frozen** until
-PLAN-X0 PASS; does not touch CAP-X2 \(\rho\) sweep; does not unlock R10  
+Status: **FROZEN** (family); **PLAN-X0 PASS**; **PLAN-X1 FAIL**
+(`anisotropy_no_value`: H1 supported, H2 rejected); **PLAN-X1.5 FAIL**
+(`iso_sufficient`: Mix-4 does not beat mean+iso); **PLAN-X2 LOCKED
+(not triggered)**; action prior closed as \(\mu+\sigma_0^2 I\); **CAP-X3
+opened at P0**; does not unlock R10  
 Depends on: host `capx_arm3.v1`; CAP-X2-P0 diagnosis (planning
 instrument insufficient — orthogonal motivation, not a CAP-X retune)  
 Does not: mix into CAP-X \(R_P(\rho)\); retune CAP-X2-P0 CEM budget;
@@ -67,6 +69,8 @@ PLAN-X0  proposal benchmark + teacher/sensitivity instrument
    ↓
 PLAN-X1  single-mode sensitivity-aware Gaussian proposal
    ↓
+PLAN-X1.5 learned q(A|c) vs mean+iso (not Hessian; not PLAN-X2)
+   ↓
 PLAN-X2  multimodal attractors: mixture / diffusion (only if needed)
    ↓
 PLAN-X3  model uncertainty + sensitivity (APR-WM, not oracle)
@@ -78,6 +82,7 @@ PLAN-X4  full APR-WM + learned proposal
 |---|---|---|
 | **PLAN-X0** | Are reachable targets, teacher \(A^\star\), and FD curvature \(h\) a fair instrument? | prereg frozen now |
 | **PLAN-X1** | Does learned \(\mu\) (H1) plus trace-matched \(\Sigma_{\mathrm{sens}}\) (H2) beat isotropic \(\Sigma\) at equal rollout budget? | freeze **after** X0 PASS |
+| **PLAN-X1.5** | If not Hessian, does learned \(q(A\mid c)\) (Mix-4 / Diag) beat mean+\(\sigma_0^2 I\)? | FAIL `iso_sufficient` |
 | **PLAN-X2** | When \(p(A\mid c)\) is multimodal, does a small mixture suffice before diffusion? | locked |
 | **PLAN-X3** | Sensitivity \(\neq\) epistemic uncertainty; how to gate \(\Sigma\) by WM validity? | locked |
 | **PLAN-X4** | Full stack | locked |
@@ -171,11 +176,22 @@ and PASS; unlocking R10.
 ## Ledger
 
 ```text
-CAP-X                  = orthogonal; rho sweep continues; P0 not reopened
-PLAN-X                 = FROZEN family
-PLAN-X0                = FROZEN prereg only (instrument; no proposal claim)
-PLAN-X1–X4             = LOCKED (X1 freeze after X0 PASS)
-R10                    = LOCKED
+CAP-X0       = PASS
+CAP-X1       = PASS
+CAP-X2       = COMPLETE  pattern=reference_failure
+               R_P(0)=1; R_P(rho>0)=undefined
+CAP-X3-P0    = PASS
+CAP-X3       = PASS  structured_adaptation_advantage
+CAP-X3B      = LOCKED
+
+PLAN-X0      = PASS
+PLAN-X1      = FAIL  pattern=anisotropy_no_value
+H1           = SUPPORTED
+H2           = REJECTED on this host/task
+PLAN-X1.5    = FAIL  iso_sufficient
+PLAN prior   = μ+iso sufficient on this host (no diffusion)
+PLAN-X2      = LOCKED (not triggered)
+R10          = LOCKED
 ```
 
 PLAN-X0 implementation starts only after this freeze on the usual

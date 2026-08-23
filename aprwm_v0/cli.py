@@ -1428,6 +1428,57 @@ def build_parser() -> argparse.ArgumentParser:
     cap_x2_parser.add_argument("--output", default="runs/cap_x2/formal")
     cap_x2_parser.add_argument("--p0-dir", default="runs/cap_x2/p0")
 
+    cap_x3_p0_parser = subparsers.add_parser(
+        "cap-x3-p0",
+        help="CAP-X3-P0 identifiability preflight (no K90; not R10)",
+    )
+    cap_x3_p0_parser.add_argument("--output", default="runs/cap_x3/p0")
+
+    cap_x3_parser = subparsers.add_parser(
+        "cap-x3",
+        help="CAP-X3 few-shot θ vs same-dim latent (requires P0; not R10)",
+    )
+    cap_x3_parser.add_argument("--output", default="runs/cap_x3/formal")
+    cap_x3_parser.add_argument("--p0-dir", default="runs/cap_x3/p0")
+
+    rtwx_x0_p0_parser = subparsers.add_parser(
+        "rtwx-x0-p0",
+        help="RoboTwin-X0-P0 oracle-state drawer instrument (no RGB; not official task)",
+    )
+    rtwx_x0_p0_parser.add_argument("--output", default="runs/rtwx_x0/p0")
+
+    rtwx_x0_smoke_parser = subparsers.add_parser(
+        "rtwx-x0-smoke",
+        help="RoboTwin-X0 official put_object_cabinet smoke (oracle state; no RGB in s)",
+    )
+    rtwx_x0_smoke_parser.add_argument("--output", default="runs/rtwx_x0/smoke")
+
+    plan_x0_parser = subparsers.add_parser(
+        "plan-x0",
+        help="PLAN-X0 teacher/sensitivity instrument (no proposal claim; not R10)",
+    )
+    plan_x0_parser.add_argument("--output", default="runs/plan_x0/formal")
+    plan_x0_parser.add_argument("--train-scenes", type=int, default=128)
+    plan_x0_parser.add_argument("--val-scenes", type=int, default=32)
+    plan_x0_parser.add_argument("--test-scenes", type=int, default=64)
+    plan_x0_parser.add_argument("--targets-per-scene", type=int, default=32)
+
+    plan_x1_parser = subparsers.add_parser(
+        "plan-x1",
+        help="PLAN-X1 sensitivity-aware Gaussian proposal (H1/H2; not R10)",
+    )
+    plan_x1_parser.add_argument("--output", default="runs/plan_x1/formal")
+    plan_x1_parser.add_argument("--x0-data", default="runs/plan_x0/formal")
+
+    plan_x15_parser = subparsers.add_parser(
+        "plan-x15",
+        help="PLAN-X1.5 learned action density vs mean+iso (not Hessian; not R10)",
+    )
+    plan_x15_parser.add_argument("--output", default="runs/plan_x15/formal")
+    plan_x15_parser.add_argument("--x0-data", default="runs/plan_x0/formal")
+    plan_x15_parser.add_argument("--skip-cem", action="store_true")
+    plan_x15_parser.add_argument("--max-eval-conditions", type=int, default=None)
+
     r10_c0_parser = subparsers.add_parser(
         "r10-c0",
         help="R10-C0 real sensor-chain C0 (locked without hardware log)",
@@ -2435,6 +2486,66 @@ def main(argv: list[str] | None = None) -> None:
         result = run_cap_x2(
             args.output,
             config=CAPX2Config(p0_dir=args.p0_dir),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "cap-x3-p0":
+        from .cap_x3_p0 import CAPX3P0Config, run_cap_x3_p0
+
+        result = run_cap_x3_p0(args.output, config=CAPX3P0Config())
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "cap-x3":
+        from .cap_x3 import CAPX3Config, run_cap_x3
+
+        result = run_cap_x3(args.output, config=CAPX3Config(p0_dir=args.p0_dir))
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "rtwx-x0-p0":
+        from .rtwx_x0_p0 import RTWX0P0Config, run_rtwx_x0_p0
+
+        result = run_rtwx_x0_p0(args.output, config=RTWX0P0Config())
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "rtwx-x0-smoke":
+        from .rtwx_x0_smoke import RTWX0SmokeConfig, run_rtwx_x0_smoke
+
+        result = run_rtwx_x0_smoke(args.output, config=RTWX0SmokeConfig())
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "plan-x0":
+        from .plan_x0 import PLANX0Config, run_plan_x0
+
+        result = run_plan_x0(
+            args.output,
+            config=PLANX0Config(
+                n_train_scenes=args.train_scenes,
+                n_val_scenes=args.val_scenes,
+                n_test_scenes=args.test_scenes,
+                targets_per_scene=args.targets_per_scene,
+            ),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "plan-x1":
+        from .plan_x1 import PLANX1Config, run_plan_x1
+
+        result = run_plan_x1(
+            args.output,
+            config=PLANX1Config(x0_data=args.x0_data),
+        )
+        print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+        return
+    if args.command == "plan-x15":
+        from .plan_x15 import PLANX15Config, run_plan_x15
+
+        result = run_plan_x15(
+            args.output,
+            config=PLANX15Config(
+                x0_data=args.x0_data,
+                skip_cem=bool(args.skip_cem),
+                max_eval_conditions=args.max_eval_conditions,
+            ),
         )
         print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
         return

@@ -248,16 +248,11 @@ separate provenance cell.
 
 ## What to do next
 
-1. **CAP-X2 \(\rho\) sweep IN PROGRESS** — judge \(R_P(\rho)\) only after
-   all competent references and min-\(P\) are in. P0 stays frozen
-   (planning disabled).
-2. **PLAN-X / PLAN-X0 prereg FROZEN**
-   (`REPORT/REG/PLANX/PLANX_PREREG.md`,
-   `REPORT/REG/PLANX/PLANX0_PREREG.md`). Orthogonal search-capacity
-   line; no proposal net until X0 PASS then PLAN-X1 freeze. Do not
-   interrupt CAP-X2.
-3. Hardware / R10-C0 only when a real force chain exists.
-4. RoboCasa / CAP-X4 remains optional and locked pending X2–X3.
+1. **Paper architecture** (this freeze): three-pillar spine in
+   `REPORT/REP/PAPER/APRWM_PAPER_ARCHITECTURE.md`. No new cells.
+2. Hardware / R10-C0 only when a real force chain exists.
+3. Do **not** open CAP-X3B, CAP-X4, PLAN-X2, or diffusion to extend
+   CAP-X3. CAP-X2 Pattern D stays a boundary, not a rescue target.
 
 ## Pointers
 

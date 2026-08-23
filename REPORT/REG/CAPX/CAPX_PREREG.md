@@ -2,9 +2,10 @@
 
 Date: 2026-08-17  
 Status: **FROZEN** (family); **CAP-X0 PASS**; **CAP-X1 PASS**;
-**CAP-X2-P0 PASS** (planning disabled); **CAP-X2 \(\rho\) sweep RUNNING**;
-X3–X4 locked; **PLAN-X family / X0 prereg FROZEN** (orthogonal; no
-sweep); does not unlock R10-C0;
+**CAP-X2 COMPLETE / `reference_failure`**; **CAP-X3 PASS**
+(`structured_adaptation_advantage`); X4 locked; **PLAN-X closed on this
+host** (X1 `anisotropy_no_value`, X1.5 `iso_sufficient`; PLAN-X2 not
+triggered); does not unlock R10-C0;
 does not reopen VIS/SIM/R9 toy claims  
 Depends on: VIS-EXT0 PASS (visual optional later as CAP-X4 only);
 `aprwm_v0/mujoco_force.py`  
@@ -98,15 +99,25 @@ R_F=1-\frac{F_{\mathrm{hybrid}}^{\min}}{F_{\mathrm{pure}}^{\min}}.
 ## Locked ledger
 
 ```text
-VIS-X0–X3 / VIS-EXT0 = PASS   (observation/attribution arc)
+VIS-X0–X3 / VIS-EXT0 = PASS
 CAP-X0                = PASS
 CAP-X1                = PASS  R_P(0)=1.0 matched-family upper bound
-CAP-X2-P0             = PASS / planning DISABLED (FROZEN)
-CAP-X2                = IN PROGRESS  match=M1∧M2 predictive only
-CAP-X3–X4             = LOCKED
-PLAN-X                = FROZEN family (orthogonal; not a CAP retune)
-PLAN-X0               = FROZEN prereg only
-PLAN-X1–X4            = LOCKED
+CAP-X2-P0             = PASS / planning DISABLED
+CAP-X2                = COMPLETE  pattern=reference_failure
+CAP-X3-P0             = PASS
+CAP-X3                = PASS  structured_adaptation_advantage
+                         (beyond dim reduction; R_K=0.5)
+CAP-X3B / CAP-X4      = LOCKED
+PLAN-X0               = PASS
+PLAN-X1               = FAIL  anisotropy_no_value
+H1                    = SUPPORTED  (search location)
+H2                    = REJECTED on this host/task
+PLAN-X1.5             = FAIL  iso_sufficient
+PLAN action prior     = μ_φ + σ0² I sufficient; no diffusion
+PLAN-X2               = LOCKED (not triggered)
+RoboTwin-X0-P0        = PASS  (proxy drawer)
+RoboTwin-X0-smoke     = FAIL  (Vulkan / SapienRenderer)
+RoboTwin-X0           = FROZEN (official 3-task locked)
 R10                   = LOCKED
 ```
 
@@ -120,3 +131,15 @@ substitutes for learned dynamics capacity; residual capacity
 tracks remaining structural mismatch.}
 }
 \]
+
+CAP-X3 (matched few-shot; not a capacity-\(R_P\) claim):
+
+\[
+\boxed{
+\textbf{causal parameterization provides adaptation efficiency
+beyond dimensionality reduction}
+}
+\]
+
+CAP-X3B / CAP-X4 / R10 remain locked. Do not open residual-\(\rho\)
+or visual cells to “complete” X3.

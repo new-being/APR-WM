@@ -1,10 +1,9 @@
 # CAP-X2 Preregistration — Structural-Mismatch Capacity Decay
 
 Date: 2026-08-18  
-Status: **FROZEN**; **implementation RUNNING** —
-**CAP-X2-P0 PASS** (planning **disabled**); \(\rho\) capacity sweep in
-progress under \(M=M_1\land M_2\); no post-hoc retune of residual family /
-grids / competence gate / P0 budget set after seeing \(R_P(\rho)\)  
+Status: **FROZEN**; **formal complete** (`REPORT/REP/CAPX/CAPX2_REPORT.md`);
+`cap_x2_passed=true`; pattern **`reference_failure`**; planning disabled;
+no post-hoc retune of residual family / grids / competence gate / P0  
 Depends on: `REPORT/REP/CAPX/CAPX1_REPORT.md` (`cap_x1_passed=true`,
 \(R_P(0)=1.0\) matched-family upper bound),
 `REPORT/REG/CAPX/CAPX_PREREG.md`, host `capx_arm3.v1`  
@@ -540,16 +539,14 @@ CAP-X1    = PASS
 R_P(0)    = 1.0 matched-family upper bound
 
 CAP-X2-P0 = PASS / planning DISABLED
-planner   = FROZEN disabled
-match     = one-step ∩ rollout only
-
-CAP-X2 rho sweep = IN PROGRESS
-rho=0 data        = generated
-current stage     = width×seed train (after CUDA state_dict fix restart)
+CAP-X2    = PASS protocol / Pattern D reference_failure
+            R_P defined only at rho=0 (R_P=1.0); rho>=0.05 undefined
+            report = REPORT/REP/CAPX/CAPX2_REPORT.md
 
 CAP-X3 = LOCKED
 CAP-X4 = LOCKED
-PLAN-X = FROZEN family / X0 prereg only (orthogonal; do not touch this sweep)
+PLAN-X = PLAN-X0 PASS; PLAN-X1 FAIL anisotropy_no_value (H1 yes, H2 no);
+         PLAN-X2 LOCKED not triggered; CAP-X3 LOCKED
 R10    = LOCKED
 ```
 
